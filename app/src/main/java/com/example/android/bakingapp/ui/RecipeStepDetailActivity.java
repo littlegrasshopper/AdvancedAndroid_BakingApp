@@ -4,8 +4,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.model.Recipe;
+import com.example.android.bakingapp.model.RecipeStep;
+
+import org.parceler.Parcels;
 
 public class RecipeStepDetailActivity extends AppCompatActivity {
+
+    // Extra for the recipe ID to be received in the intent
+    public static final String EXTRA_RECIPE_STEP = "extraRecipeStep";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +31,10 @@ public class RecipeStepDetailActivity extends AppCompatActivity {
             fragmentManager.beginTransaction()
                     .add(R.id.recipe_step_detail_container, stepDetailFragment)
                     .commit();
+
+            // Get the passed in RecipeStep object from the intent
+            RecipeStep recipeStep = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_RECIPE_STEP));
+            stepDetailFragment.setRecipeStep(recipeStep);
         }
     }
 }

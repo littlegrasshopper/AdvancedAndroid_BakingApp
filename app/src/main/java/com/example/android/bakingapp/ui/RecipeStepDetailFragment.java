@@ -1,26 +1,72 @@
 package com.example.android.bakingapp.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.media.session.MediaButtonReceiver;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
+import com.example.android.bakingapp.adapter.RecipeIngredientArrayAdapter;
+import com.example.android.bakingapp.adapter.RecipeStepArrayAdapter;
+import com.example.android.bakingapp.model.RecipeStep;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+
+import org.parceler.Parcels;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by fonda on 7/21/18.
- */
+public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
-public class RecipeStepDetailFragment extends Fragment {
+    private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
+    public static final String INSTANCE_RECIPE_STEP = "recipeStep";
+    public static final String INSTANCE_PLAYER_POSITION = "playerPosition";
+    private static final int NEXT_STEP_DELAY_MILLIS = 1000;
 
-    @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mExoPlayerView;
+
+    @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mPlayerView;
+    @BindView(R.id.tvStepInstruction) TextView mStepInstruction;
+    @BindView(R.id.btnNextStep) Button mNextStep;
+
+    private RecipeStep mRecipeStep;
+    private long mPosition = -1;
+
+    private SimpleExoPlayer mExoPlayer;
+    //private SimpleExoPlayerView mPlayerView;
+    private static MediaSessionCompat mMediaSession;
+    private PlaybackStateCompat.Builder mStateBuilder;
 
     // Mandatory empty constructor for fragments
     public RecipeStepDetailFragment() {
@@ -30,21 +76,264 @@ public class RecipeStepDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+
         // Load the saved state if there is one
         if (savedInstanceState != null) {
-            //TODO
+            if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEP)) {
+                mRecipeStep = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_STEP));
+            }
+            if (savedInstanceState.containsKey(INSTANCE_PLAYER_POSITION)) {
+                mPosition = savedInstanceState.getLong(INSTANCE_PLAYER_POSITION);
+            }
         }
 
         // Inflate the step details fragment layout
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         ButterKnife.bind(this, rootView);
 
+
         // Return the rootView
         return rootView;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        // Populate the details of the recipe step
+
+        mStepInstruction.setText(mRecipeStep.getShortDescription());
+
+        mNextStep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO
+
+                // Wait some time so the user can see the correct answer, then go to the next question.
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mExoPlayer.stop();
+                        //finish();
+                    }
+                }, NEXT_STEP_DELAY_MILLIS);
+            }
+        });
+
+        // Initialize the Media Session.
+        initializeMediaSession();
+        //Sample answerSample = Sample.getSampleByID(this, mAnswerSampleID);
+
+        // Initialize the player.
+        String videoUrl = "https://d17h27t6h515a5.cloudfront.net/topher/2017/April/590129a5_10-mix-in-melted-chocolate-for-frosting-yellow-cake/10-mix-in-melted-chocolate-for-frosting-yellow-cake.mp4";
+        //mRecipeStep.getVideoURL();
+        if (videoUrl != null && !videoUrl.isEmpty()) {
+            initializePlayer(Uri.parse(videoUrl), mPosition);
+        }
+
+    }
+
+    /**
+     * Initializes the Media Session to be enabled with media buttons, transport controls, callbacks
+     * and media controller.
+     */
+    private void initializeMediaSession() {
+
+        // Create a MediaSessionCompat.
+        mMediaSession = new MediaSessionCompat(getActivity(), TAG);
+
+        // Enable callbacks from MediaButtons and TransportControls.
+        mMediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        // Do not let MediaButtons restart the player when the app is not visible.
+        mMediaSession.setMediaButtonReceiver(null);
+
+        // Set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player.
+        mStateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(
+                        PlaybackStateCompat.ACTION_PLAY |
+                                PlaybackStateCompat.ACTION_PAUSE |
+                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                PlaybackStateCompat.ACTION_FAST_FORWARD |
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE);
+
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+
+
+        // MySessionCallback has methods that handle callbacks from a media controller.
+        //TODO mMediaSession.setCallback(new RecipeStepDetailFragment().MySessionCallback());
+
+        // Start the Media Session since the activity is active.
+        mMediaSession.setActive(true);
+
+    }
+
+    /**
+     * Initialize ExoPlayer.
+     * @param mediaUri The URI of the sample to play.
+     */
+    private void initializePlayer(Uri mediaUri, long pos) {
+        if (mExoPlayer == null) {
+            // Create an instance of the ExoPlayer.
+            TrackSelector trackSelector = new DefaultTrackSelector();
+            LoadControl loadControl = new DefaultLoadControl();
+            mExoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
+            mPlayerView.setPlayer(mExoPlayer);
+
+            if (pos > 0) {
+                mExoPlayer.seekTo(pos);
+            }
+
+            // Set the ExoPlayer.EventListener to this activity.
+            mExoPlayer.addListener(this);
+
+            // Prepare the MediaSource.
+            String userAgent = Util.getUserAgent(getActivity(), "BakingApp");
+            MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
+                    getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
+            mExoPlayer.prepare(mediaSource);
+            mExoPlayer.setPlayWhenReady(true);
+        }
+    }
+
+
+    /**
+     * Release ExoPlayer.
+     */
+    private void releasePlayer() {
+        //mNotificationManager.cancelAll();
+        mExoPlayer.stop();
+        mExoPlayer.release();
+        mExoPlayer = null;
+    }
+
+    /**
+     * Set the RecipeStep object for this fragment
+     * @param recipeStep RecipeStep object to render in this fragment
+     */
+    public void setRecipeStep(RecipeStep recipeStep) {
+        mRecipeStep = recipeStep;
+    }
+
+    /**
+     * Release the player when the activity is destroyed.
+     */
+    /*
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        releasePlayer();
+        mMediaSession.setActive(false);
+    }*/
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        super.onDestroy();
+        releasePlayer();
+        mMediaSession.setActive(false);
+    }
+    // ExoPlayer Event Listeners
+
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+    }
+
+    /**
+     * Method that is called when the ExoPlayer state changes. Used to update the MediaSession
+     * PlayBackState to keep in sync, and post the media notification.
+     * @param playWhenReady true if ExoPlayer is playing, false if it's paused.
+     * @param playbackState int describing the state of ExoPlayer. Can be STATE_READY, STATE_IDLE,
+     *                      STATE_BUFFERING, or STATE_ENDED.
+     */
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
+                    mExoPlayer.getCurrentPosition(), 1f);
+        } else if((playbackState == ExoPlayer.STATE_READY)){
+            mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
+                    mExoPlayer.getCurrentPosition(), 1f);
+        }
+        mMediaSession.setPlaybackState(mStateBuilder.build());
+        //showNotification(mStateBuilder.build());
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+    }
+
+    @Override
+    public void onPositionDiscontinuity() {
+    }
+
+    /**
+     * Media Session Callbacks, where all external clients control the player.
+     */
+    private class MySessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onPlay() {
+            mExoPlayer.setPlayWhenReady(true);
+        }
+
+        @Override
+        public void onPause() {
+            mExoPlayer.setPlayWhenReady(false);
+        }
+
+        @Override
+        public void onSkipToPrevious() {
+            mExoPlayer.seekTo(0);
+        }
+    }
+
+    // TODO done (1): Create a static inner class that extends Broadcast Receiver and implement the onReceive() method.
+    public static class MediaReceiver extends BroadcastReceiver {
+        public MediaReceiver() {
+
+        }
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MediaButtonReceiver.handleIntent(mMediaSession, intent);
+        }
+    }
+    //TODO done (2): Call MediaButtonReceiver.handleIntent and pass in the incoming intent
+    // as well as the MediaSession object to forward the intent to the MediaSession.Callbacks.
+
+    /**
+     * Gets portrait of the composer for a sample by the sample ID.
+     * @param context The application context.
+     * @param sampleID The sample ID.
+     * @return The portrait Bitmap.
+     */
+    /*
+    static Bitmap getComposerArtBySampleID(Context context, int sampleID){
+        Sample sample = Sample.getSampleByID(context, sampleID);
+        int albumArtID = context.getResources().getIdentifier(
+                sample != null ? sample.getAlbumArtID() : null, "drawable",
+                context.getPackageName());
+        return BitmapFactory.decodeResource(context.getResources(), albumArtID);
+    }
+    */
+
+    /**
+     * Save the current state of the fragment
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(INSTANCE_RECIPE_STEP, Parcels.wrap(mRecipeStep));
+        outState.putLong(INSTANCE_PLAYER_POSITION, mExoPlayer.getCurrentPosition());
     }
 }

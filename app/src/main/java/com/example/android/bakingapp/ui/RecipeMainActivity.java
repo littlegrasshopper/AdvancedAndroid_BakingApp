@@ -3,6 +3,7 @@ package com.example.android.bakingapp.ui;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Movie;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,9 +12,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -23,8 +28,8 @@ import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.RecipeClient;
 import com.example.android.bakingapp.adapter.RecipeArrayAdapter;
 import com.example.android.bakingapp.model.Recipe;
-import com.facebook.stetho.Stetho;
-import com.facebook.stetho.okhttp3.StethoInterceptor;
+//import com.facebook.stetho.Stetho;
+//import com.facebook.stetho.okhttp3.StethoInterceptor;
 
 import org.parceler.Parcels;
 
@@ -60,7 +65,7 @@ public class RecipeMainActivity extends AppCompatActivity
 
     @BindView(R.id.rvRecipes)
     RecyclerView mRecipesRecyclerView;
-    @BindView(R.id.tbToolbar) android.support.v7.widget.Toolbar mToolbar;
+    //@BindView(R.id.tbToolbar) android.support.v7.widget.Toolbar mToolbar;
     @BindView(R.id.tvErrorMessage)
     TextView mErrorMessageDisplay;
     @BindView(R.id.pbLoadingIndicator)
@@ -69,25 +74,26 @@ public class RecipeMainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Stetho.initializeWithDefaults(this);
+        /*Stetho.initializeWithDefaults(this);
         new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
                 .build();
+                */
         setContentView(R.layout.activity_recipe_main);
         ButterKnife.bind(this);
 
         // Sets the mToolbar to act as the ActionBar for this Activity window.
-        if (mToolbar != null) {
+        //if (mToolbar != null) {
 //            setSupportActionBar(mToolbar);
-        }
-        mToolbar.setTitle(getResources().getString(R.string.app_name));
+        //}
+        //mToolbar.setTitle(getResources().getString(R.string.app_name));
 
         // Restore sortBy selection if one is saved
         if (savedInstanceState != null && savedInstanceState.containsKey(LIFECYCLE_SORT_BY_STATE)) {
             mSortBy = savedInstanceState.getInt(LIFECYCLE_SORT_BY_STATE);
         }
         setupRecipes();
-        fetchMovieData();
+        fetchRecipeData();
     }
 
     @Override
@@ -105,19 +111,60 @@ public class RecipeMainActivity extends AppCompatActivity
         mRecipeAdapter = new RecipeArrayAdapter(this, this);
         mRecipesRecyclerView.setHasFixedSize(true);
         mRecipesRecyclerView.setAdapter(mRecipeAdapter);
+        Float dp = convertPixelsToDp(getScreenResolution(this), this);
+        Log.i("RecipeMainActivity", "dp: " + dp);
+
+        int gridSpan = (int)(dp / 300);
+        Log.i("RecipeMainActivity", "ScreenResolution: " + getScreenResolution(this));
+
+        Log.i("RecipeMainActivity", "GridSpan: " + gridSpan);
+
+        // Credit
+        // https://stackoverflow.com/questions/11330363/how-to-detect-device-is-android-phone-or-android-tablet
+        //if (getResources().getBoolean(R.bool.isTab)) {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(
                 this,
-                3,
+                gridSpan > 0 ? gridSpan : 1,
                 GridLayoutManager.VERTICAL,
                 false
         );
         mRecipesRecyclerView.setLayoutManager(gridLayoutManager);
+
+        /*
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
+                this,
+                LinearLayoutManager.VERTICAL,
+                false);
+        mRecipesRecyclerView.setLayoutManager(linearLayoutManager);
+        */
+    }
+
+    // Credit: https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp;
+    }
+
+    //Credit: https://stackoverflow.com/questions/11252067/how-do-i-get-the-screensize-programmatically-in-android
+    private static int getScreenResolution(Context context)
+    {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels;
+        //int height = metrics.heightPixels;
+
+        //return "{" + width + "," + height + "}";
+        return width;
     }
 
     /**
      * Fetch the recipes
      */
-    private void fetchMovieData() {
+    private void fetchRecipeData() {
         if (isOnline()) {
             showRecipeDataView();
             getRecipes();
@@ -232,6 +279,7 @@ public class RecipeMainActivity extends AppCompatActivity
     @Override
     public void onClick(Recipe recipe) {
         Class destinationActivity = RecipeDetailActivity.class;
+
         Context context = RecipeMainActivity.this;
         Intent intent = new Intent(context, destinationActivity);
 

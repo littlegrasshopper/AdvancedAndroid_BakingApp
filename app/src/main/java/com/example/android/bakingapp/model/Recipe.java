@@ -16,9 +16,9 @@ public class Recipe {
     private String servings;
     private String image;
 
-    private ArrayList<RecipeIngredients> ingredients;
+    private ArrayList<RecipeIngredient> ingredients;
 
-    private ArrayList<RecipeSteps> steps;
+    private ArrayList<RecipeStep> steps;
 
     public Recipe() {}
 
@@ -61,19 +61,19 @@ public class Recipe {
         this.image = image;
     }
 
-    public ArrayList<RecipeIngredients> getIngredients() {
+    public ArrayList<RecipeIngredient> getIngredients() {
         return this.ingredients;
     }
 
-    public void setIngredients(ArrayList<RecipeIngredients> ingredients) {
+    public void setIngredients(ArrayList<RecipeIngredient> ingredients) {
         this.ingredients = ingredients;
     }
 
-    public ArrayList<RecipeSteps> getSteps() {
+    public ArrayList<RecipeStep> getSteps() {
         return this.steps;
     }
 
-    public void setSteps(ArrayList<RecipeSteps> steps) {
+    public void setSteps(ArrayList<RecipeStep> steps) {
         this.steps = steps;
     }
 

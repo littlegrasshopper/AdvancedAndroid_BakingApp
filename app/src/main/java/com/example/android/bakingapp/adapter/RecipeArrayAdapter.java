@@ -58,8 +58,11 @@ public class RecipeArrayAdapter extends
         Recipe recipe = mRecipes.get(position);
         TextView textView = holder.tvRecipeTitle;
         textView.setText(recipe.getName());
-        //ImageView imageView = (ImageView) holder.ivImage;
-        //Picasso.with(mContext).load(Recipe.getFullPosterPath()).into(imageView);
+        String imagePath = recipe.getImage();
+        if (imagePath != null && !imagePath.isEmpty()) {
+            ImageView imageView = holder.ivImageView;
+            Picasso.with(mContext).load(imagePath).placeholder(R.drawable.cupcake).into(imageView);
+        }
     }
 
     @Override
@@ -74,6 +77,7 @@ public class RecipeArrayAdapter extends
 
         /* ButterKnife binding */
         @BindView(R.id.tvRecipeTitle) TextView tvRecipeTitle;
+        @BindView(R.id.ivRecipeImage) ImageView ivImageView;
 
         public RecipeViewHolder(View itemView) {
             super(itemView);

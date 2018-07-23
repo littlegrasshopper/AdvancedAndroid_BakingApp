@@ -8,6 +8,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.example.android.bakingapp.ui.RecipeDetailActivity;
+import com.example.android.bakingapp.ui.RecipeMainActivity;
+
 /**
  * Implementation of App Widget functionality.
  */
@@ -24,10 +27,10 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         // Otherwise launch the MainActivity
         Intent intent;
         if (recipeId != BakingAppWidgetService.INVALID_RECIPE_ID) {
-            intent = new Intent(context, QuizActivity.class);
+            intent = new Intent(context, RecipeDetailActivity.class);
             intent.putExtra(BakingAppWidgetService.EXTRA_RECIPE_ID, recipeId);
         } else {
-            intent = new Intent(context, MainActivity.class);
+            intent = new Intent(context, RecipeMainActivity.class);
         }
         // Create a PendingIntent
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
