@@ -31,13 +31,13 @@ public class RecipeIngredientArrayAdapter extends
 
     private Context mContext;
 
-    private final RecipeIngredientArrayAdapterOnClickHandler mClickHandler;
+    //private final RecipeIngredientArrayAdapterOnClickHandler mClickHandler;
 
     private List<RecipeIngredient> mRecipeIngredients = new ArrayList<>();
 
-    public RecipeIngredientArrayAdapter(Context context, RecipeIngredientArrayAdapterOnClickHandler clickHandler) {
+    public RecipeIngredientArrayAdapter(Context context/*, RecipeIngredientArrayAdapterOnClickHandler clickHandler*/) {
         mContext = context;
-        mClickHandler = clickHandler;
+        //mClickHandler = clickHandler;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class RecipeIngredientArrayAdapter extends
     /**
      * ViewHolder class
      */
-    public class RecipeIngredientViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class RecipeIngredientViewHolder extends RecyclerView.ViewHolder /*implements View.OnClickListener */{
 
         /* ButterKnife binding */
         @BindView(R.id.tvIngredient) TextView tvIngredient;
@@ -82,15 +82,16 @@ public class RecipeIngredientArrayAdapter extends
         public RecipeIngredientViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            itemView.setOnClickListener(this);
+            //itemView.setOnClickListener(this);
         }
 
-        @Override
+       /* @Override
+        /*
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             RecipeIngredient RecipeIngredient = mRecipeIngredients.get(adapterPosition);
             mClickHandler.onClick(RecipeIngredient);
-        }
+        }*/
     }
 
     public void setRecipeIngredientData(/*Array*/List<RecipeIngredient> RecipeIngredientData) {

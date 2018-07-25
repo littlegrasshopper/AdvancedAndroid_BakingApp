@@ -3,7 +3,6 @@ package com.example.android.bakingapp.ui;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,17 +12,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
-import com.example.android.bakingapp.adapter.RecipeIngredientArrayAdapter;
-import com.example.android.bakingapp.adapter.RecipeStepArrayAdapter;
+import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.RecipeStep;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -51,17 +48,26 @@ import butterknife.ButterKnife;
 public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
+    public static final String INSTANCE_RECIPE = "recipe";
     public static final String INSTANCE_RECIPE_STEP = "recipeStep";
+    public static final String INSTANCE_RECIPE_INDEX = "recipeIndex";
     public static final String INSTANCE_PLAYER_POSITION = "playerPosition";
+    public static final String INSTANCE_PLAYER_STATE = "playerState";
+
     private static final int NEXT_STEP_DELAY_MILLIS = 1000;
 
 
     @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mPlayerView;
     @BindView(R.id.tvStepInstruction) TextView mStepInstruction;
-    @BindView(R.id.btnNextStep) Button mNextStep;
+    //@BindView(R.id.btnNextStep) Button mNextBtn;
+
+
+    private Recipe mRecipe;
+    private int mCurrentRecipeStep;
 
     private RecipeStep mRecipeStep;
-    private long mPosition = -1;
+    private long mPlayerPosition = -1;
+    private boolean mPlayerState = true;
 
     private SimpleExoPlayer mExoPlayer;
     //private SimpleExoPlayerView mPlayerView;
@@ -70,27 +76,33 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
     // Mandatory empty constructor for fragments
     public RecipeStepDetailFragment() {
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-
-        // Load the saved state if there is one
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEP)) {
-                mRecipeStep = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_STEP));
-            }
-            if (savedInstanceState.containsKey(INSTANCE_PLAYER_POSITION)) {
-                mPosition = savedInstanceState.getLong(INSTANCE_PLAYER_POSITION);
-            }
-        }
-
         // Inflate the step details fragment layout
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         ButterKnife.bind(this, rootView);
 
+        // Load the saved state if there is one
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(INSTANCE_RECIPE)) {
+                mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE));
+            }
+            if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEP)) {
+                mRecipeStep = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_STEP));
+            }
+            if (savedInstanceState.containsKey(INSTANCE_RECIPE_INDEX)) {
+                mCurrentRecipeStep = savedInstanceState.getInt(INSTANCE_RECIPE_INDEX);
+            }
+            if (savedInstanceState.containsKey(INSTANCE_PLAYER_POSITION)) {
+                mPlayerPosition = savedInstanceState.getLong(INSTANCE_PLAYER_POSITION);
+            }
+            if (savedInstanceState.containsKey(INSTANCE_PLAYER_STATE)) {
+                mPlayerState = savedInstanceState.getBoolean(INSTANCE_PLAYER_STATE);;
+            }
+        }
 
         // Return the rootView
         return rootView;
@@ -100,39 +112,62 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         // Populate the details of the recipe step
-
+        mRecipeStep = mRecipe.getSteps().get(mCurrentRecipeStep);
         mStepInstruction.setText(mRecipeStep.getShortDescription());
 
-        mNextStep.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO
+        /*
+        if (mNextBtn.getVisibility() == View.VISIBLE) {
+            mNextBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // TODO
 
-                // Wait some time so the user can see the correct answer, then go to the next question.
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mExoPlayer.stop();
-                        //finish();
-                    }
-                }, NEXT_STEP_DELAY_MILLIS);
-            }
-        });
+                    // Wait some time so the user can see the correct answer, then go to the next question.
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mExoPlayer.stop();
+                            //finish();
+                        }
+                    }, NEXT_STEP_DELAY_MILLIS);
+                }
+            });
+        }*/
 
         // Initialize the Media Session.
         initializeMediaSession();
         //Sample answerSample = Sample.getSampleByID(this, mAnswerSampleID);
 
         // Initialize the player.
-        String videoUrl = "https://d17h27t6h515a5.cloudfront.net/topher/2017/April/590129a5_10-mix-in-melted-chocolate-for-frosting-yellow-cake/10-mix-in-melted-chocolate-for-frosting-yellow-cake.mp4";
-        //mRecipeStep.getVideoURL();
+        //String videoUrl = "https://d17h27t6h515a5.cloudfront.net/topher/2017/April/590129a5_10-mix-in-melted-chocolate-for-frosting-yellow-cake/10-mix-in-melted-chocolate-for-frosting-yellow-cake.mp4";
+        setupMediaPlayer(mRecipeStep, mPlayerPosition, mPlayerState);
+        /*String videoUrl = mRecipeStep.getVideoURL();
         if (videoUrl != null && !videoUrl.isEmpty()) {
-            initializePlayer(Uri.parse(videoUrl), mPosition);
+            initializePlayer(Uri.parse(videoUrl), null, mPlayerPosition, mPlayerState);
+            Log.i(TAG, "initializing player again: " + mExoPlayer);
         }
+        if (mRecipeStep.getThumbnailURL() != null) {
+            mPlayerView.setDefaultArtwork(BitmapFactory.decodeResource
+                    (getResources(), R.drawable.question_mark));
+        }*/
+    }
 
+    public void setupMediaPlayer(RecipeStep step, long playerPosition, boolean playerState) {
+        Log.i(TAG, "About to initialize media session and media player");
+        if (step != null) {
+            //initializeMediaSession();
+            String url = step.getVideoURL();
+            String thumb = step.getThumbnailURL();
+
+            if (mPlayerView != null && thumb != null) {
+                mPlayerView.setDefaultArtwork(BitmapFactory.decodeFile(thumb));
+            }
+            if (url != null && !url.isEmpty()) {
+                initializePlayer(Uri.parse(url), Uri.parse(thumb), playerPosition, playerState);
+            }
+        }
     }
 
     /**
@@ -176,8 +211,10 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
      * Initialize ExoPlayer.
      * @param mediaUri The URI of the sample to play.
      */
-    private void initializePlayer(Uri mediaUri, long pos) {
+    private void initializePlayer(Uri mediaUri, Uri thumbnailUri, long pos, boolean state) {
+
         if (mExoPlayer == null) {
+            Log.i(TAG, "Exoplayer is null");
             // Create an instance of the ExoPlayer.
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
@@ -192,11 +229,11 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
             mExoPlayer.addListener(this);
 
             // Prepare the MediaSource.
-            String userAgent = Util.getUserAgent(getActivity(), "BakingApp");
+            String userAgent = Util.getUserAgent(getContext(), "BakingApp");
             MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(
                     getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
             mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
+            mExoPlayer.setPlayWhenReady(state);
         }
     }
 
@@ -219,6 +256,19 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         mRecipeStep = recipeStep;
     }
 
+    public void stopPlayer() {
+        // Wait some time so the user can see the correct answer, then go to the next question.
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mExoPlayer != null) {
+                    mExoPlayer.stop();
+                }
+                //finish();
+            }
+        }, NEXT_STEP_DELAY_MILLIS);
+    }
     /**
      * Release the player when the activity is destroyed.
      */
@@ -233,9 +283,9 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        super.onDestroy();
-        releasePlayer();
-        mMediaSession.setActive(false);
+        //super.onDestroy();
+        //releasePlayer();
+       //mMediaSession.setActive(false);
     }
     // ExoPlayer Event Listeners
 
@@ -251,6 +301,12 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     public void onLoadingChanged(boolean isLoading) {
     }
 
+    @Override
+    public void onPause() {
+        mPlayerState = mExoPlayer.getPlayWhenReady();
+        super.onPause();
+    }
+
     /**
      * Method that is called when the ExoPlayer state changes. Used to update the MediaSession
      * PlayBackState to keep in sync, and post the media notification.
@@ -260,6 +316,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
      */
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        /*
         if((playbackState == ExoPlayer.STATE_READY) && playWhenReady){
             mStateBuilder.setState(PlaybackStateCompat.STATE_PLAYING,
                     mExoPlayer.getCurrentPosition(), 1f);
@@ -267,8 +324,8 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
             mStateBuilder.setState(PlaybackStateCompat.STATE_PAUSED,
                     mExoPlayer.getCurrentPosition(), 1f);
         }
-        mMediaSession.setPlaybackState(mStateBuilder.build());
-        //showNotification(mStateBuilder.build());
+       // mMediaSession.setPlaybackState(mStateBuilder.build());
+        //showNotification(mStateBuilder.build());*/
     }
 
     @Override
@@ -314,8 +371,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
     /**
      * Gets portrait of the composer for a sample by the sample ID.
-     * @param context The application context.
-     * @param sampleID The sample ID.
+
      * @return The portrait Bitmap.
      */
     /*
@@ -328,12 +384,35 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     }
     */
 
+    /*
+    public void showNextButton(boolean show) {
+        if (mNextBtn != null) {
+            if (show) {
+                mNextBtn.setVisibility(View.VISIBLE);
+            } else {
+                mNextBtn.setVisibility(View.GONE);
+            }
+        }
+    }*/
+
+
+    public void setRecipe(Recipe recipe) {
+        mRecipe = recipe;
+    }
+
+    public void setCurrentRecipeStep(int pos) {
+        mCurrentRecipeStep = pos;
+    }
+
     /**
      * Save the current state of the fragment
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(INSTANCE_RECIPE, Parcels.wrap(mRecipe));
         outState.putParcelable(INSTANCE_RECIPE_STEP, Parcels.wrap(mRecipeStep));
+        outState.putInt(INSTANCE_RECIPE_INDEX, mCurrentRecipeStep);
         outState.putLong(INSTANCE_PLAYER_POSITION, mExoPlayer.getCurrentPosition());
+        outState.putBoolean(INSTANCE_PLAYER_STATE, mPlayerState);
     }
 }

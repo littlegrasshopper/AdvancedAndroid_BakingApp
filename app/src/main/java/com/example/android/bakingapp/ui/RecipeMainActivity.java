@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.android.bakingapp.BakingAppWidgetService;
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.RecipeClient;
 import com.example.android.bakingapp.adapter.RecipeArrayAdapter;
@@ -285,6 +286,9 @@ public class RecipeMainActivity extends AppCompatActivity
 
         intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(recipe));
         startActivity(intent);
+
+        //Update the Widget service
+        BakingAppWidgetService.startActionUpdateBakingWidget(context, 123/*Long.getLong(recipe.getId())*/, recipe.getName(), recipe.getIngredients().toArray().toString());
     }
 
     @Override
