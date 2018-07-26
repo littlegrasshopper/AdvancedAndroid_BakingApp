@@ -56,7 +56,7 @@ public class RecipeStepArrayAdapter extends
     public void onBindViewHolder(RecipeStepViewHolder holder, int position) {
         RecipeStep recipeStep = mRecipeSteps.get(position);
         TextView textView = holder.tvRecipeStep;
-        Log.d("STEP ADAPTER", "step description is: " + recipeStep.getShortDescription());
+        Log.d(TAG, "RecipeStep short description: " + recipeStep.getShortDescription());
         textView.setText(recipeStep.getShortDescription());
     }
 
@@ -87,7 +87,7 @@ public class RecipeStepArrayAdapter extends
         }
     }
 
-    public void setRecipeStepData(/*Array*/List<RecipeStep> RecipeStepData) {
+    public void setRecipeStepData(List<RecipeStep> RecipeStepData) {
         mRecipeSteps.clear();
         mRecipeSteps.addAll(RecipeStepData);
         notifyDataSetChanged();

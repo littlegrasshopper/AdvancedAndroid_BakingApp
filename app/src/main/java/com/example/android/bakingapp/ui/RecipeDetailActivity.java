@@ -19,6 +19,9 @@ import org.parceler.Parcels;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Container activity for ingredients and steps.
+ */
 public class RecipeDetailActivity extends AppCompatActivity
         implements RecipeStepArrayAdapter.RecipeStepArrayAdapterOnClickHandler {
 

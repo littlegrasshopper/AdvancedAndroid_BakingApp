@@ -45,6 +45,9 @@ import org.parceler.Parcels;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Fragment for details of a recipe step (video, instructions)
+ */
 public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
@@ -284,7 +287,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     public void onDestroyView() {
         super.onDestroyView();
         //super.onDestroy();
-        //releasePlayer();
+        releasePlayer();
        //mMediaSession.setActive(false);
     }
     // ExoPlayer Event Listeners
@@ -303,7 +306,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
     @Override
     public void onPause() {
-        mPlayerState = mExoPlayer.getPlayWhenReady();
+//        mPlayerState = mExoPlayer.getPlayWhenReady();
         super.onPause();
     }
 

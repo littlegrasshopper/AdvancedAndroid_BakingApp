@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Containing activity for details of a recipe step (video, instructions, next button)
+ */
 public class RecipeStepDetailActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String TAG = RecipeStepDetailActivity.class.getSimpleName();

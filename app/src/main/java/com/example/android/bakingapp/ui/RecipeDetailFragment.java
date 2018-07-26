@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Fragment for recipe ingredients and steps.
+ */
 public class RecipeDetailFragment extends Fragment {
 
     public static final String INSTANCE_RECIPE_STEPS = "recipeSteps";

@@ -12,10 +12,6 @@ import java.util.ArrayList;
 public class RecipeStep {
     public static final String VIDEO_PATH = "https://d17h27t6h515a5.cloudfront.net/topher/2017/%s";
 
-    public static final String TRAILER_BASE_URL = "https://www.youtube.com/watch?v=";
-    public static final String TRAILER_IMAGE_BASE_URL = "https://img.youtube.com/vi/";
-    public static final String TRAILER_IMAGE_DEFAULT = "/mqdefault.jpg";
-
     private String id;
     private String shortDescription;
     private String videoURL;

@@ -25,6 +25,7 @@ import rx.Observable;
  */
 public class RecipeClient {
 
+    public static final String TAG = RecipeClient.class.getSimpleName();
     public static final String RECIPE_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/";
 
     private static final Object LOCK = new Object();
@@ -38,9 +39,8 @@ public class RecipeClient {
             public Response intercept(Chain chain) throws IOException {
                 Request original = chain.request();
                 HttpUrl originalHttpUrl = original.url();
-                Log.d("MovieClient", "OriginalURL: " + originalHttpUrl);
+                Log.d(TAG, "OriginalURL: " + originalHttpUrl);
                 HttpUrl url = originalHttpUrl.newBuilder()
-                        //.addQueryParameter("api_key", NetworkUtils.API_KEY)
                         .build();
                 Request.Builder requestBuilder = original.newBuilder()
                         .url(url);

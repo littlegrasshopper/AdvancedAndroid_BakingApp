@@ -25,19 +25,12 @@ public class RecipeIngredientArrayAdapter extends
 
     public static final String TAG = RecipeIngredientArrayAdapter.class.getSimpleName();
 
-    public interface RecipeIngredientArrayAdapterOnClickHandler {
-        void onClick(RecipeIngredient m);
-    }
-
     private Context mContext;
-
-    //private final RecipeIngredientArrayAdapterOnClickHandler mClickHandler;
 
     private List<RecipeIngredient> mRecipeIngredients = new ArrayList<>();
 
-    public RecipeIngredientArrayAdapter(Context context/*, RecipeIngredientArrayAdapterOnClickHandler clickHandler*/) {
+    public RecipeIngredientArrayAdapter(Context context) {
         mContext = context;
-        //mClickHandler = clickHandler;
     }
 
     @Override
@@ -58,7 +51,7 @@ public class RecipeIngredientArrayAdapter extends
         TextView ingredientView = holder.tvIngredient;
         TextView quantityView = holder.tvQuantity;
         TextView measureView = holder.tvMeasure;
-        Log.d("INGREDIENT ADAPTER", "step description is: " + RecipeIngredient.getIngredient());
+        Log.d(TAG, "List of ingredients: " + RecipeIngredient.getIngredient());
         quantityView.setText(RecipeIngredient.getQuantity());
         measureView.setText(RecipeIngredient.getMeasure());
         ingredientView.setText(RecipeIngredient.getIngredient());
@@ -72,7 +65,7 @@ public class RecipeIngredientArrayAdapter extends
     /**
      * ViewHolder class
      */
-    public class RecipeIngredientViewHolder extends RecyclerView.ViewHolder /*implements View.OnClickListener */{
+    public class RecipeIngredientViewHolder extends RecyclerView.ViewHolder {
 
         /* ButterKnife binding */
         @BindView(R.id.tvIngredient) TextView tvIngredient;
@@ -82,16 +75,7 @@ public class RecipeIngredientArrayAdapter extends
         public RecipeIngredientViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-            //itemView.setOnClickListener(this);
         }
-
-       /* @Override
-        /*
-        public void onClick(View view) {
-            int adapterPosition = getAdapterPosition();
-            RecipeIngredient RecipeIngredient = mRecipeIngredients.get(adapterPosition);
-            mClickHandler.onClick(RecipeIngredient);
-        }*/
     }
 
     public void setRecipeIngredientData(/*Array*/List<RecipeIngredient> RecipeIngredientData) {

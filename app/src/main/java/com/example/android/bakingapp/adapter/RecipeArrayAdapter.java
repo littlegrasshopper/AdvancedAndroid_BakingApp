@@ -2,6 +2,7 @@ package com.example.android.bakingapp.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,15 +54,21 @@ public class RecipeArrayAdapter extends
         return viewHolder;
     }
 
+    // Credit: https://www.publicdomainpictures.net/en/view-image.php?image=32346&picture=pink-chocolate-cupcake
     @Override
     public void onBindViewHolder(RecipeViewHolder holder, int position) {
         Recipe recipe = mRecipes.get(position);
         TextView textView = holder.tvRecipeTitle;
         textView.setText(recipe.getName());
         String imagePath = recipe.getImage();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            ImageView imageView = holder.ivImageView;
-            Picasso.with(mContext).load(imagePath).placeholder(R.drawable.cupcake).into(imageView);
+        ImageView imageView = holder.ivImageView;
+        if (TextUtils.isEmpty(imagePath)) {
+            Picasso.with(mContext).load(imagePath)
+                    .placeholder(R.drawable.cupcake)
+                    .into(imageView);
+        } else {
+            Picasso.with(mContext).load(R.drawable.pink_chocolate_cupcake)
+                    .into(imageView);
         }
     }
 
@@ -93,7 +100,7 @@ public class RecipeArrayAdapter extends
         }
     }
 
-    public void setRecipeData(/*Array*/List<Recipe> RecipeData) {
+    public void setRecipeData(List<Recipe> RecipeData) {
         mRecipes.clear();
         mRecipes.addAll(RecipeData);
         notifyDataSetChanged();
