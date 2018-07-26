@@ -2,10 +2,9 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.example.android.bakingapp"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -18,14 +17,87 @@ android {
         }
     }
 }
+repositories {
+    mavenCentral()
+}
+
+ext {
+    supportLibVersion = '25.3.0'
+    //supportLibVersion = '27.1.1'
+    //supportLibVersion = '26.1.0'
+    constraintLayoutLibVersion = '1.1.0'
+    junitLibVersion = '4.12'
+    testRunnerVersion = '1.0.2'
+    expressoCoreVersion = '3.0.2'
+}
 
 dependencies {
+    /* Original ExoPlayer Lesson libs
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
     compile 'com.google.android.exoplayer:exoplayer:r2.2.0'
-    compile 'com.android.support:appcompat-v7:25.3.0'
+    compile 'com.android.support:appcompat-v7:26.3.0'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    */
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //TODO: verify these when doing expresso tests
+    // Required for local unit tests (JUnit 4 framework)
+    testImplementation "junit:junit:${junitLibVersion}"
+
+    // Required for instrumented tests
+    //androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation "com.android.support.test:runner:${testRunnerVersion}"
+
+    androidTestCompile("com.android.support.test.espresso:espresso-core:${expressoCoreVersion}", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
+    //implementation "com.android.support:support-compat:${supportLibVersion}"
+    implementation "com.android.support.constraint:constraint-layout:${constraintLayoutLibVersion}"
+    implementation "com.android.support:recyclerview-v7:${supportLibVersion}"
+    implementation "com.android.support:cardview-v7:${supportLibVersion}"
+    implementation 'org.parceler:parceler-api:1.1.1'
+    annotationProcessor 'org.parceler:parceler:1.1.1'
+
+
+
+    // ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer:r2.2.0'
+
+    // Butterknife annotation
+    implementation 'com.jakewharton:butterknife:8.6.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
+
+    // Picasso
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'jp.wasabeef:picasso-transformations:2.1.0'
+
+    //GSON
+    implementation 'com.google.code.gson:gson:2.8.2'
+    // Retrofit 2
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    // RxJava
+    implementation 'io.reactivex:rxandroid:1.2.1'
+    implementation 'io.reactivex:rxjava:1.1.8'
+    // Android Async HTTP
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+
+    // Android Architecture Components - Room
+    compile "android.arch.persistence.room:runtime:1.0.0"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
+
+    // Android Architecture Components - Lifecycle - LiveData
+    implementation "android.arch.lifecycle:extensions:1.1.0"
+    annotationProcessor "android.arch.lifecycle:compiler:1.1.0"
+
+    // Facebook Stetho
+    //compile 'com.facebook.stetho:stetho:1.5.0'
+    //compile 'com.facebook.stetho:stetho-okhttp3:1.5.0'
 }

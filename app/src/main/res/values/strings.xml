@@ -12,7 +12,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.-->
 <resources>
-    <string name="app_name">Guess the Composer!</string>
+    <string name="app_name">Time to Bake!</string>
     <string name="new_game">New Game</string>
     <string name="high_score">High Score: %1$d / %2$d</string>
     <string name="preference_file_key">Score Preferences</string>
@@ -28,4 +28,7 @@
     <string name="appwidget_text">BAKINGAPP</string>
     <string name="add_widget">Add widget</string>
     <string name="dummy_ingredients">Ingredient 1 Ingredient 2Ingredient 3</string>
+
+    <string name="error_message">Error occurred - check permissions or network connection.</string>
+    <string name="recipe_image">Recipe Image</string>
 </resources>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- Displays details of the recipe step (video and instructions) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recipe_step_detail_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/exoMediaPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+
+    <TextView
+        android:id="@+id/tvStepInstruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="list of ingredients"/>
+
+    <!--
+    <Button
+        android:id="@+id/btnNextStep"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next Step"/> -->
+
+</LinearLayout>
