@@ -112,6 +112,10 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Bundle args = getArguments();
+        mRecipe = Parcels.unwrap(args.getParcelable(RecipeDetailActivity.EXTRA_RECIPE));
+        mCurrentRecipeStepIndex = args.getInt(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP);
+
         // Populate the details of the recipe step
         mRecipeStep = mRecipe.getSteps().get(mCurrentRecipeStepIndex);
 
@@ -253,7 +257,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
      * Set the Recipe object for this fragment
      * @param recipe Recipe object to guide the next step
      */
-    public void setRecipe(Recipe recipe) {
+    public void XsetRecipe(Recipe recipe) {
         mRecipe = recipe;
     }
 
@@ -261,7 +265,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
      * Set the RecipeStep object for this fragment
      * @param recipeStep RecipeStep object to render in this fragment
      */
-    public void setRecipeStep(RecipeStep recipeStep) {
+    public void XsetRecipeStep(RecipeStep recipeStep) {
         mRecipeStep = recipeStep;
     }
 
@@ -269,7 +273,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
      * Set the current step in the recipe
      * @param pos Current step
      */
-    public void setCurrentRecipeStepIndex(int pos) {
+    public void XsetCurrentRecipeStepIndex(int pos) {
         mCurrentRecipeStepIndex = pos;
     }
 

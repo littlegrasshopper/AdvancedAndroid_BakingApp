@@ -30,10 +30,7 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
 
     private Recipe mRecipe;
     private int mCurrentRecipeStep;
-
-    private RecipeStep mRecipeStep;
     RecipeStepDetailFragment mRecipeStepDetailFragment;
-
 
     public RecipeStepDetailActivity( ) {
     }
@@ -47,8 +44,14 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
         //Only create new fragments when there is no previously saved state
         if (savedInstanceState == null) {
 
+            // Get the passed in Recipe object from the intent
+            Intent intent = getIntent();
+            mRecipe = Parcels.unwrap(intent.getParcelableExtra(RecipeDetailActivity.EXTRA_RECIPE));
+            mCurrentRecipeStep = intent.getIntExtra(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, 0);
+
             // Create a new detail fragment
             mRecipeStepDetailFragment = new RecipeStepDetailFragment();
+            mRecipeStepDetailFragment.setArguments(buildBundle(mRecipe, mCurrentRecipeStep));
 
             // Add the fragment to its container using a FragmentManager and a transaction
             android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
@@ -57,14 +60,6 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
                     .add(R.id.recipe_step_detail_container, mRecipeStepDetailFragment)
                     .commit();
 
-            // Get the passed in RecipeStep object from the intent
-            Intent intent = getIntent();
-            //mRecipeStep = Parcels.unwrap(intent.getParcelableExtra(RecipeDetailActivity.EXTRA_RECIPE_STEP));
-            //mRecipeStepDetailFragment.setRecipeStep(mRecipeStep);
-            mRecipe = Parcels.unwrap(intent.getParcelableExtra(RecipeDetailActivity.EXTRA_RECIPE));
-            mCurrentRecipeStep = intent.getIntExtra(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, 0);
-            mRecipeStepDetailFragment.setRecipe(mRecipe);
-            mRecipeStepDetailFragment.setCurrentRecipeStepIndex(mCurrentRecipeStep);
             showOrHideNextButton();
         }
         mNextButton.setOnClickListener(this);
@@ -76,23 +71,19 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
      */
     @Override
     public void onClick(View view) {
-        // Tell the fragment to stop the media player
-        if (mRecipeStepDetailFragment != null) {
-            mRecipeStepDetailFragment.stopPlayer();
-            // TODO: does it need to be released
-        }
-/*
+
+        // Create a new fragment and replace
+        // Increment the step count
         mRecipeStepDetailFragment = new RecipeStepDetailFragment();
-        mRecipeStepDetailFragment.setRecipe(mRecipe);
-        mRecipeStepDetailFragment.setCurrentRecipeStepIndex(++mCurrentRecipeStep);
+        mRecipeStepDetailFragment.setArguments(buildBundle(mRecipe, ++mCurrentRecipeStep));
 
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.recipe_step_detail_container, mRecipeStepDetailFragment)
                 .commit();
-        showOrHideNextButton();
-*/
-        //mRecipeStepDetailFragment.setupMediaPlayer(mRecipe.getSteps().get(mCurrentRecipeStep), 0, true);
 
+        showOrHideNextButton();
+
+        /****
         Bundle b = new Bundle();
         //b.putParcelable(RecipeDetailActivity.EXTRA_RECIPE_STEP, Parcels.wrap(mRecipeStep));
         b.putParcelable(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(mRecipe));
@@ -101,18 +92,29 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
         intent.putExtras(b);
         startActivity(intent);
         finish();
+         ***/
     }
 
+    /**
+     * Show the Next Step button as needed
+     */
     public void showOrHideNextButton() {
         if (mRecipe != null) {
             ArrayList<RecipeStep> steps = mRecipe.getSteps();
             if (steps != null) {
                 int numOfSteps = steps.size();
-                if (mCurrentRecipeStep < numOfSteps) {
+                if (mCurrentRecipeStep < numOfSteps - 1) {
                     mNextButton.setVisibility(View.VISIBLE);
                 }
             }
         }
+    }
+
+    private Bundle buildBundle (Recipe recipe, int index) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(recipe));
+        bundle.putInt(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, index);
+        return bundle;
     }
 
     // TODO: Save next button state?

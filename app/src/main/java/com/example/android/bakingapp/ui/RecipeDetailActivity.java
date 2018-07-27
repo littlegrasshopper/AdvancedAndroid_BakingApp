@@ -56,7 +56,6 @@ public class RecipeDetailActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
-        ButterKnife.bind(this);
 
         /*
         if (savedInstanceState != null) {
@@ -73,18 +72,19 @@ public class RecipeDetailActivity extends AppCompatActivity
             // Add the fragment to its container using a FragmentManager and a transaction
             android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
 
+            // Get the passed in Recipe object from the intent
+            mRecipe = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_RECIPE));
+
             // Only create new fragments when there is no previously saved state
             detailFragment = new RecipeDetailFragment();
+
+            Bundle b = new Bundle();
+            b.putParcelable(EXTRA_RECIPE, Parcels.wrap(mRecipe));
+            detailFragment.setArguments(b);
 
             fragmentManager.beginTransaction()
                     .add(R.id.recipe_detail_container, detailFragment)
                     .commit();
-
-            // Get the passed in Recipe object from the intent
-            mRecipe = Parcels.unwrap(getIntent().getParcelableExtra(EXTRA_RECIPE));
-
-            detailFragment.setIngredients(mRecipe.getIngredients());
-            detailFragment.setSteps(mRecipe.getSteps());
 
 
             // Check if this is a two-pane layout (tablet)
@@ -110,33 +110,31 @@ public class RecipeDetailActivity extends AppCompatActivity
     @Override
     public void onClick(RecipeStep recipeStep) {
 
+        // Build the bundle arg
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(mRecipe));
+        bundle.putInt(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, (int)Long.parseLong(recipeStep.getId()));
+        //bundle.putParcelable(EXTRA_RECIPE_STEP, Parcels.wrap(recipeStep));
+
         /* If in a two-pane layout, just instantiate a new recipe step detail fragment.
          * Otherwise, start a new activity for the step detail.
          */
         if (mTwoPane) {
             // Just need to create/replace the step detail fragment
-            //if (stepDetailFragment == null) {
-                stepDetailFragment = new RecipeStepDetailFragment();
-            //}
+            stepDetailFragment = new RecipeStepDetailFragment();
+            stepDetailFragment.setArguments(bundle);
 
             // Replace the old step fragment with a new one
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.recipe_step_detail_container, stepDetailFragment)
                     .commit();
-            ///stepDetailFragment.setRecipeStep(recipeStep); //passed in on event handler
-            stepDetailFragment.setRecipe(mRecipe); // from the intent
-            stepDetailFragment.setCurrentRecipeStepIndex((int)Long.parseLong(mRecipe.getId()));
-
         } else {
             Log.i("RecipeDetailActivity", "about to start step detail activity");
             Class destinationActivity = RecipeStepDetailActivity.class;
             Context context = this;
-            Bundle b = new Bundle();
-            //b.putParcelable(EXTRA_RECIPE_STEP, Parcels.wrap(recipeStep));
-            b.putParcelable(EXTRA_RECIPE, Parcels.wrap(mRecipe));
-            b.putInt(EXTRA_RECIPE_CURRENT_STEP, (int)Long.parseLong(mRecipe.getId()));
+
             final Intent intent = new Intent(context, destinationActivity);
-            intent.putExtras(b);
+            intent.putExtras(bundle);
             startActivity(intent);
         }
     }

@@ -34,6 +34,7 @@ import butterknife.ButterKnife;
  */
 public class RecipeDetailFragment extends Fragment {
 
+    public static final String INSTANCE_RECIPE = "recipe";
     public static final String INSTANCE_RECIPE_STEPS = "recipeSteps";
     public static final String INSTANCE_RECIPE_INGREDIENTS = "recipeIngredients";
 
@@ -41,6 +42,7 @@ public class RecipeDetailFragment extends Fragment {
     private ArrayList<RecipeStep> mSteps;
     private RecipeArrayAdapter mAdapter;
     private RecipeStep mRecipeStep;
+    private Recipe mRecipe;
 
     RecipeStepArrayAdapter.RecipeStepArrayAdapterOnClickHandler mCallback;
 
@@ -61,12 +63,17 @@ public class RecipeDetailFragment extends Fragment {
 
         // Load the saved state if there is one
         if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(INSTANCE_RECIPE)) {
+                mRecipe =  Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE));
+            }
+            /*
             if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEPS)) {
                 mSteps =  Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_STEPS));
             }
             if (savedInstanceState.containsKey(INSTANCE_RECIPE_INGREDIENTS)) {
                 mIngredients = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_INGREDIENTS));
             }
+            */
         }
 
         return rootView;
@@ -75,6 +82,14 @@ public class RecipeDetailFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Bundle args = getArguments();
+        if (mRecipe == null) {
+            mRecipe = Parcels.unwrap(args.getParcelable(RecipeDetailActivity.EXTRA_RECIPE));
+        }
+
+        mSteps = mRecipe.getSteps();
+        mIngredients = mRecipe.getIngredients();
 
         // Populate the list of ingredients by creating a layout manager and applying to the
         // ingredients recycler view
@@ -95,21 +110,6 @@ public class RecipeDetailFragment extends Fragment {
         rvSteps.setAdapter(stepArrayAdapter);
         stepArrayAdapter.setRecipeStepData(mSteps);
     }
-
-    // Setter methods to populate the ingredients and steps for the
-    // fragment to display
-    public void setIngredients(ArrayList<RecipeIngredient> ingredients) {
-        mIngredients = ingredients;
-    }
-
-    public void setSteps(ArrayList<RecipeStep> steps) {
-        mSteps = steps;
-    }
-
-    public void setRecipeStep(RecipeStep recipeStep) {
-        mRecipeStep = recipeStep;
-    }
-
 
 /*
     @Override
@@ -143,8 +143,10 @@ public class RecipeDetailFragment extends Fragment {
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(INSTANCE_RECIPE_STEPS, Parcels.wrap(mSteps));
-        outState.putParcelable(INSTANCE_RECIPE_INGREDIENTS, Parcels.wrap(mIngredients));
+        outState.putParcelable(INSTANCE_RECIPE, Parcels.wrap(mRecipe));
+        //outState.putParcelable(INSTANCE_RECIPE_STEPS, Parcels.wrap(mSteps));
+        //outState.putParcelable(INSTANCE_RECIPE_INGREDIENTS, Parcels.wrap(mIngredients));
+
         super.onSaveInstanceState(outState);
     }
 }
