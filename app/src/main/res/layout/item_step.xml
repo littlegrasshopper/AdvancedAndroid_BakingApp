@@ -6,12 +6,14 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/step_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="5dp">
 
         <TextView
+            android:id="@+id/step_bullet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
@@ -26,6 +28,7 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/step_divider"
         android:layout_width="match_parent"
         android:layout_height=".5dp"
         android:background="@android:color/darker_gray" />

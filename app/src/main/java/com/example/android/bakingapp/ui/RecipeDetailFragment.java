@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,9 +49,7 @@ public class RecipeDetailFragment extends Fragment {
     RecyclerView rvSteps;
 
     // Mandatory constructor for instantiating the fragment
-    public RecipeDetailFragment() {
-
-    }
+    public RecipeDetailFragment() {}
 
     @Nullable
     @Override
@@ -72,6 +69,13 @@ public class RecipeDetailFragment extends Fragment {
             }
         }
 
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         // Populate the list of ingredients by creating a layout manager and applying to the
         // ingredients recycler view
         LinearLayoutManager ingredientsLayoutManager = new LinearLayoutManager(getActivity(),
@@ -90,14 +94,6 @@ public class RecipeDetailFragment extends Fragment {
         RecipeStepArrayAdapter stepArrayAdapter = new RecipeStepArrayAdapter(getContext(), mCallback);
         rvSteps.setAdapter(stepArrayAdapter);
         stepArrayAdapter.setRecipeStepData(mSteps);
-        return rootView;
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-
     }
 
     // Setter methods to populate the ingredients and steps for the
@@ -149,5 +145,6 @@ public class RecipeDetailFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(INSTANCE_RECIPE_STEPS, Parcels.wrap(mSteps));
         outState.putParcelable(INSTANCE_RECIPE_INGREDIENTS, Parcels.wrap(mIngredients));
+        super.onSaveInstanceState(outState);
     }
 }

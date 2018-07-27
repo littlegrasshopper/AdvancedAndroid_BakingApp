@@ -14,6 +14,7 @@
 -->
 <!-- Credit: Udacity - Media Player Lesson -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/exo_playback_control"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"

@@ -8,14 +8,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--
-        android:layout_width="@dimen/mediaPlayerWidth"
-        android:layout_height="@dimen/mediaPlayerHeight"
-        -->
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/exoMediaPlayer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/mediaPlayerWidth"
+        android:layout_height="@dimen/mediaPlayerHeight"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

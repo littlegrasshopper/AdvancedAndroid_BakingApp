@@ -64,13 +64,8 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
             mRecipe = Parcels.unwrap(intent.getParcelableExtra(RecipeDetailActivity.EXTRA_RECIPE));
             mCurrentRecipeStep = intent.getIntExtra(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, 0);
             mRecipeStepDetailFragment.setRecipe(mRecipe);
-            mRecipeStepDetailFragment.setCurrentRecipeStep(mCurrentRecipeStep);
+            mRecipeStepDetailFragment.setCurrentRecipeStepIndex(mCurrentRecipeStep);
             showOrHideNextButton();
-            /*
-            if (intent.hasExtra(RecipeDetailActivity.EXTRA_SHOW_NEXT)) {
-                boolean showNext = intent.getBooleanExtra(RecipeDetailActivity.EXTRA_SHOW_NEXT, false);
-                //showNextButton(showNext);
-            }*/
         }
         mNextButton.setOnClickListener(this);
     }
@@ -81,35 +76,31 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
      */
     @Override
     public void onClick(View view) {
-        Log.i(TAG, "Next Button is clicked");
-
         // Tell the fragment to stop the media player
         if (mRecipeStepDetailFragment != null) {
             mRecipeStepDetailFragment.stopPlayer();
+            // TODO: does it need to be released
         }
-
+/*
         mRecipeStepDetailFragment = new RecipeStepDetailFragment();
-
         mRecipeStepDetailFragment.setRecipe(mRecipe);
-        mRecipeStepDetailFragment.setCurrentRecipeStep(++mCurrentRecipeStep);
-        showOrHideNextButton();
+        mRecipeStepDetailFragment.setCurrentRecipeStepIndex(++mCurrentRecipeStep);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.recipe_step_detail_container, mRecipeStepDetailFragment)
                 .commit();
-        mRecipeStepDetailFragment.setupMediaPlayer(mRecipe.getSteps().get(mCurrentRecipeStep), 0, true);
+        showOrHideNextButton();
+*/
+        //mRecipeStepDetailFragment.setupMediaPlayer(mRecipe.getSteps().get(mCurrentRecipeStep), 0, true);
 
-                /*
-                Intent nextStepIntent = new Intent(RecipeStepDetailActivity.this, RecipeStepDetailActivity.class);
-                finish();
-                startActivity(nextStepIntent);*
-                Bundle b = new Bundle();
-                //b.putParcelable(EXTRA_RECIPE_STEP, Parcels.wrap(recipeStep));
-                b.putParcelable(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(mRecipe));
-                b.putInt(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, mCurrentRecipeStep);
-                final Intent intent = new Intent(RecipeStepDetailActivity.this, RecipeStepDetailActivity.class);
-                intent.putExtras(b);
-                startActivity(intent);
-                */
+        Bundle b = new Bundle();
+        //b.putParcelable(RecipeDetailActivity.EXTRA_RECIPE_STEP, Parcels.wrap(mRecipeStep));
+        b.putParcelable(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(mRecipe));
+        b.putInt(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP, ++mCurrentRecipeStep);
+        final Intent intent = new Intent(RecipeStepDetailActivity.this, RecipeStepDetailActivity.class);
+        intent.putExtras(b);
+        startActivity(intent);
+        finish();
     }
 
     public void showOrHideNextButton() {
@@ -122,9 +113,11 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
                 }
             }
         }
-        /*
-        if (mRecipeStepDetailFragment != null) {
-            mRecipeStepDetailFragment.showNextButton(show);
-        }*/
+    }
+
+    // TODO: Save next button state?
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 }

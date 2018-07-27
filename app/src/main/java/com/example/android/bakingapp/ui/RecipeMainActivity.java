@@ -153,11 +153,6 @@ public class RecipeMainActivity extends AppCompatActivity
      * RxJava call to retrieve the list of recipes asynchronously
      */
     private void getRecipes() {
-        /*
-        if (category == NetworkUtils.FAVORITES) {
-            setupViewModel();
-            return;
-        }*/
         subscription = RecipeClient.getInstance()
                 .getRecipes()
                 // scheduler where the Observable will do the work
@@ -183,7 +178,7 @@ public class RecipeMainActivity extends AppCompatActivity
                     @Override
                     public void onNext(List<Recipe> recipeResult) {
                         Log.d(TAG, "OnNext");
-                        Log.d(TAG, "movie results are: " + recipeResult);
+                        Log.d(TAG, "recipe results are: " + recipeResult);
                         mRecipeAdapter.setRecipeData(recipeResult/*.getResults()*/);
                         if (scrollState != null) {
                             mRecipesRecyclerView.getLayoutManager().onRestoreInstanceState(scrollState);

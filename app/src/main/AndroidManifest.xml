@@ -43,18 +43,12 @@ Copyright (C) 2017 The Android Open Source Project
 
         <!-- Credit: https://stackoverflow.com/questions/49303165/exoplayer-resume-on-same-position-on-rotate-screen -->
         <activity android:name=".ui.RecipeStepDetailActivity"
-            android:parentActivityName=".ui.RecipeDetailActivity"
-            android:configChanges="orientation|screenSize|layoutDirection">
+        android:configChanges="orientation|screenSize|layoutDirection"
+        android:parentActivityName=".ui.RecipeDetailActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.RecipeDetailActivity" />
         </activity>
-
-        <receiver android:name=".ui.RecipeStepDetailFragment$MediaReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
 
         <receiver android:name=".BakingAppWidgetProvider">
             <intent-filter>
