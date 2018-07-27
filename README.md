@@ -2,7 +2,7 @@
 
 ## What's Broken
 - Back button from video screen results in crash
-    Caused by: java.lang.NullPointerException: at android.app.Activity.performCreate(Activity.java:6662)
+    Caused by: java.lang.NullPointerException: at  com.example.android.bakingapp.ui.RecipeDetailActivity.onCreate(RecipeDetailActivity.java:86)
 - Audio is gone
 - Detail screen (ingredients, steps) doesn't scroll (only Steps view scrolls)
 - Tablet: Video doesn't play most of the time
