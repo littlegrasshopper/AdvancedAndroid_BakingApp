@@ -67,7 +67,7 @@ public class RecipeArrayAdapter extends
                     .placeholder(R.drawable.cupcake)
                     .into(imageView);
         } else {
-            Picasso.with(mContext).load(R.drawable.pink_chocolate_cupcake)
+            Picasso.with(mContext).load(R.drawable.cupcake)
                     .into(imageView);
         }
     }
