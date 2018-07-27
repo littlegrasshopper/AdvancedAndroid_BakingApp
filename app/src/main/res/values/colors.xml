@@ -17,4 +17,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
     <color name="toolbarBackground">#8B008B</color>
+    <color name="ingredientColor">#6b1868</color>
+    <color name="widgetBackground">#c842f4</color>
 </resources>

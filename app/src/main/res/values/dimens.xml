@@ -13,4 +13,12 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="recipeCardHeight">200dp</dimen>
     <dimen name="recipeTitleTextSize">20sp</dimen>
     <dimen name="recipeImageHeight">150dp</dimen>
+    <dimen name="detailHeadingTextSize">20sp</dimen>
+    <dimen name="mediaPlayerWidth">300dp</dimen>
+    <dimen name="mediaPlayerHeight">300dp</dimen>
+    <dimen name="iconSize">48dp</dimen>
+    <dimen name="widget_height">200dp</dimen>
+    <dimen name="widget_width">300dp</dimen>
+    <dimen name="widget_icon_margin">4dp</dimen>
+
 </resources>

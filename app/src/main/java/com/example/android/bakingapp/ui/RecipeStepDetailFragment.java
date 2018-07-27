@@ -61,7 +61,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
 
 
     @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mPlayerView;
-    @BindView(R.id.tvStepInstruction) TextView mStepInstruction;
+   // @BindView(R.id.tvStepInstruction) TextView mStepInstruction;
     //@BindView(R.id.btnNextStep) Button mNextBtn;
 
 
@@ -77,6 +77,8 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     private static MediaSessionCompat mMediaSession;
     private PlaybackStateCompat.Builder mStateBuilder;
 
+    private TextView mStepInstruction;
+
     // Mandatory empty constructor for fragments
     public RecipeStepDetailFragment() {
     }
@@ -88,7 +90,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        // Load the saved state if there is one
+            // Load the saved state if there is one
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(INSTANCE_RECIPE)) {
                 mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE));
@@ -115,9 +117,14 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         // Populate the details of the recipe step
         mRecipeStep = mRecipe.getSteps().get(mCurrentRecipeStep);
-        mStepInstruction.setText(mRecipeStep.getShortDescription());
+
+        if (getActivity().findViewById(R.id.tvStepInstruction) != null) {
+            mStepInstruction = (TextView) getActivity().findViewById(R.id.tvStepInstruction);
+            mStepInstruction.setText(mRecipeStep.getShortDescription());
+        }
 
         /*
         if (mNextBtn.getVisibility() == View.VISIBLE) {

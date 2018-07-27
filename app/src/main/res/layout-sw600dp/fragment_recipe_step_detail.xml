@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Displays details of the recipe step (video and instructions) -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recipe_step_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--
+        android:layout_width="@dimen/mediaPlayerWidth"
+        android:layout_height="@dimen/mediaPlayerHeight"
+        -->
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/exoMediaPlayer"
-        android:layout_width="300dp"
-        android:layout_height="300dp">
-    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.501" />
 
     <TextView
         android:id="@+id/tvStepInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="list of ingredients"/>
+        android:layout_marginTop="@dimen/detailBodyIndent"
+        app:layout_constraintLeft_toLeftOf="@+id/exoMediaPlayer"
+        app:layout_constraintTop_toBottomOf="@+id/exoMediaPlayer" />
 
     <!--
     <Button
@@ -26,4 +37,4 @@
         android:layout_height="wrap_content"
         android:text="Next Step"/> -->
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

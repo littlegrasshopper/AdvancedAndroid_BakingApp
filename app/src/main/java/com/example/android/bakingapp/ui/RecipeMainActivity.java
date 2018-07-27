@@ -29,6 +29,7 @@ import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.RecipeClient;
 import com.example.android.bakingapp.adapter.RecipeArrayAdapter;
 import com.example.android.bakingapp.model.Recipe;
+import com.example.android.bakingapp.model.RecipeIngredient;
 //import com.facebook.stetho.Stetho;
 //import com.facebook.stetho.okhttp3.StethoInterceptor;
 
@@ -55,10 +56,8 @@ public class RecipeMainActivity extends AppCompatActivity
 
     private static final String TAG = RecipeMainActivity.class.getSimpleName();
     private static final String LIFECYCLE_SCROLL_STATE = "scrollState";
-    private static final String LIFECYCLE_SORT_BY_STATE = "sortByState";
 
     private static Parcelable scrollState;
-    private int mSortBy = 0;
 
     private RecipeArrayAdapter mRecipeAdapter;
     private Subscription subscription;
@@ -66,7 +65,6 @@ public class RecipeMainActivity extends AppCompatActivity
 
     @BindView(R.id.rvRecipes)
     RecyclerView mRecipesRecyclerView;
-    //@BindView(R.id.tbToolbar) android.support.v7.widget.Toolbar mToolbar;
     @BindView(R.id.tvErrorMessage)
     TextView mErrorMessageDisplay;
     @BindView(R.id.pbLoadingIndicator)
@@ -83,16 +81,6 @@ public class RecipeMainActivity extends AppCompatActivity
         setContentView(R.layout.activity_recipe_main);
         ButterKnife.bind(this);
 
-        // Sets the mToolbar to act as the ActionBar for this Activity window.
-        //if (mToolbar != null) {
-//            setSupportActionBar(mToolbar);
-        //}
-        //mToolbar.setTitle(getResources().getString(R.string.app_name));
-
-        // Restore sortBy selection if one is saved
-        if (savedInstanceState != null && savedInstanceState.containsKey(LIFECYCLE_SORT_BY_STATE)) {
-            mSortBy = savedInstanceState.getInt(LIFECYCLE_SORT_BY_STATE);
-        }
         setupRecipes();
         fetchRecipeData();
     }
@@ -114,10 +102,8 @@ public class RecipeMainActivity extends AppCompatActivity
         mRecipesRecyclerView.setAdapter(mRecipeAdapter);
         Float dp = convertPixelsToDp(getScreenResolution(this), this);
         Log.i("RecipeMainActivity", "dp: " + dp);
-
         int gridSpan = (int)(dp / 300);
         Log.i("RecipeMainActivity", "ScreenResolution: " + getScreenResolution(this));
-
         Log.i("RecipeMainActivity", "GridSpan: " + gridSpan);
 
         // Credit
@@ -130,14 +116,6 @@ public class RecipeMainActivity extends AppCompatActivity
                 false
         );
         mRecipesRecyclerView.setLayoutManager(gridLayoutManager);
-
-        /*
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(
-                this,
-                LinearLayoutManager.VERTICAL,
-                false);
-        mRecipesRecyclerView.setLayoutManager(linearLayoutManager);
-        */
     }
 
     // Credit: https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
@@ -156,9 +134,6 @@ public class RecipeMainActivity extends AppCompatActivity
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         int width = metrics.widthPixels;
-        //int height = metrics.heightPixels;
-
-        //return "{" + width + "," + height + "}";
         return width;
     }
 
@@ -288,7 +263,15 @@ public class RecipeMainActivity extends AppCompatActivity
         startActivity(intent);
 
         //Update the Widget service
-        BakingAppWidgetService.startActionUpdateBakingWidget(context, 123/*Long.getLong(recipe.getId())*/, recipe.getName(), recipe.getIngredients().toArray().toString());
+        StringBuilder builder = new StringBuilder();
+        ArrayList<RecipeIngredient> ingredients = recipe.getIngredients();
+        for (int i = 0; i < ingredients.size(); i++) {
+            // Credit:
+            // https://stackoverflow.com/questions/23503642/how-to-use-formatted-strings-together-with-placeholders-in-android
+            builder.append(String.format(getString(R.string.bulletedList), ingredients.get(i).getIngredient()));
+        }
+        BakingAppWidgetService.startActionUpdateBakingWidget(context,Long.parseLong(recipe.getId()),
+                recipe.getName(), builder.toString());
     }
 
     @Override

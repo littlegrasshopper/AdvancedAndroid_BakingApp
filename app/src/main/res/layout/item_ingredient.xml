@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_ingredient"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -8,17 +7,31 @@
     android:padding="5dp">
 
     <TextView
-        android:id="@+id/tvQuantity"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="8dp"
+        android:text="►">
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/tvQuantity"
+        style="IngredientText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="2dp" />
 
     <TextView
         android:id="@+id/tvMeasure"
+        style="IngredientText"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:paddingRight="5dp" />
 
     <TextView
         android:id="@+id/tvIngredient"
+        style="IngredientText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

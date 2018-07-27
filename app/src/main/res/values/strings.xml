@@ -25,10 +25,13 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="restart">Restart</string>
-    <string name="appwidget_text">BAKINGAPP</string>
     <string name="add_widget">Add widget</string>
     <string name="dummy_ingredients">Ingredient 1 Ingredient 2Ingredient 3</string>
-
+    <string name="ingredients">Ingredients</string>
+    <string name="steps">Steps</string>
+    <string name="bullet">&#8226;</string>
+    <string name="nextStep">Next Step</string>
+    <string name="bulletedList">&#8226;   %1$2s \n</string>
     <string name="error_message">Error occurred - check permissions or network connection.</string>
     <string name="recipe_image">Recipe Image</string>
 </resources>

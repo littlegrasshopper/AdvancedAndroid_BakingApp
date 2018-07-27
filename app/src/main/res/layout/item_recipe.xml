@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_recipe"
     android:layout_width="match_parent"
@@ -22,9 +21,9 @@
                 android:id="@+id/ivRecipeImage"
                 android:layout_width="@dimen/recipeCardWidth"
                 android:layout_height="@dimen/recipeImageHeight"
+                android:layout_gravity="center"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/recipe_image"
-                android:layout_gravity="center"
                 android:scaleType="fitCenter" />
 
             <TextView

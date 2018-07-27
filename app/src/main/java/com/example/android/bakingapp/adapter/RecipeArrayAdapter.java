@@ -62,7 +62,7 @@ public class RecipeArrayAdapter extends
         textView.setText(recipe.getName());
         String imagePath = recipe.getImage();
         ImageView imageView = holder.ivImageView;
-        if (TextUtils.isEmpty(imagePath)) {
+        if (!TextUtils.isEmpty(imagePath)) {
             Picasso.with(mContext).load(imagePath)
                     .placeholder(R.drawable.cupcake)
                     .into(imageView);

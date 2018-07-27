@@ -34,6 +34,7 @@ public class RecipeDetailActivity extends AppCompatActivity
 
     // Instance parameter for the recipe
     public static final String INSTANCE_RECIPE = "instanceRecipe";
+    public static final String INSTANCE_RECIPE_STEP = "instanceRecipeStep";
     // Instance parameter for fragment
     public static final String INSTANCE_FRAGMENT_STEP = "instanceFragmentStep";
     public static final String INSTANCE_FRAGMENT_STEP_DETAIL = "instanceFragmentStepDetail";
@@ -55,15 +56,6 @@ public class RecipeDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
         ButterKnife.bind(this);
-
-
-        // Enable up icon
-        /*
-        if (mToolbar != null) {
-            getSupportActionBar(mToolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }*/
-
 
        // if (savedInstanceState != null) {
             if (savedInstanceState == null) {
@@ -149,12 +141,12 @@ public class RecipeDetailActivity extends AppCompatActivity
 
 
     // Credit: https://stackoverflow.com/questions/15313598/once-for-all-how-to-correctly-save-instance-state-of-fragments-in-back-stack
-        /*
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Save the fragment's instance
-        getSupportFragmentManager().putFragment(outState, INSTANCE_FRAGMENT, detailFragment);
+        //getSupportFragmentManager().putFragment(outState, INSTANCE_FRAGMENT, detailFragment);
         outState.putParcelable(INSTANCE_RECIPE, Parcels.wrap(mRecipe));
-    }*/
+        outState.putInt(INSTANCE_RECIPE_STEP, mCurrentRecipeStep);
+    }
 }

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in

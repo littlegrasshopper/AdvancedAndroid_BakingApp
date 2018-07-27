@@ -9,15 +9,13 @@
 
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/exoMediaPlayer"
-        android:layout_width="300dp"
-        android:layout_height="300dp">
-    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+        android:layout_width="@dimen/mediaPlayerWidth"
+        android:layout_height="@dimen/mediaPlayerHeight" />
 
     <TextView
         android:id="@+id/tvStepInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="list of ingredients"/>
-
+        android:layout_marginTop="@dimen/detailBodyIndent" />
 
 </LinearLayout>

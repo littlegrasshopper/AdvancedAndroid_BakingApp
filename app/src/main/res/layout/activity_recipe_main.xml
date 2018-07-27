@@ -8,15 +8,6 @@
     android:orientation="vertical"
     tools:context="com.example.android.bakingapp.ui.RecipeMainActivity">
 
-    <!--android.support.v7.widget.Toolbar
-        android:id="@+id/tbToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/background_dark"
-        app:theme="@style/Base.ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:titleTextColor="@android:color/white">
-    </android.support.v7.widget.Toolbar-->
-
     <FrameLayout
         android:id="@+id/recipe_main_container"
         android:layout_width="match_parent"
