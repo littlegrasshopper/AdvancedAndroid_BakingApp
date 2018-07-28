@@ -35,7 +35,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.HttpException;
-import okhttp3.OkHttpClient;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -43,13 +42,14 @@ import rx.schedulers.Schedulers;
 
 /**
  * Main activity to display a grid of recipes.
- * Credit: Udacity S03.01-Exercise-RecyclerView (MainActivity.java)
+ * Listens to click events on the recipes and instantiates RecipeDetailActivity.
  */
 public class RecipeMainActivity extends AppCompatActivity
         implements RecipeArrayAdapter.RecipeArrayAdapterOnClickHandler {
 
     private static final String TAG = RecipeMainActivity.class.getSimpleName();
     private static final String LIFECYCLE_SCROLL_STATE = "scrollState";
+    private static final int MAX_WIDTH_RECIPE = 300;
 
     private static Parcelable scrollState;
 
@@ -83,17 +83,14 @@ public class RecipeMainActivity extends AppCompatActivity
     }
 
     /**
-     * Setup the recipes recycler view
+     * Setup the recipes recycler view using a GridLayoutManager for single and two-pane layout
      */
     private void setupRecipes() {
         mRecipeAdapter = new RecipeArrayAdapter(this, this);
         mRecipesRecyclerView.setHasFixedSize(true);
         mRecipesRecyclerView.setAdapter(mRecipeAdapter);
-        Float dp = convertPixelsToDp(getScreenResolution(this), this);
-        Log.i("RecipeMainActivity", "dp: " + dp);
-        int gridSpan = (int)(dp / 300);
-        Log.i("RecipeMainActivity", "ScreenResolution: " + getScreenResolution(this));
-        Log.i("RecipeMainActivity", "GridSpan: " + gridSpan);
+        Float dp = RecipeUtils.convertPixelsToDp(RecipeUtils.getScreenResolution(this), this);
+        int gridSpan = (int)(dp / MAX_WIDTH_RECIPE);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(
                 this,
@@ -102,25 +99,6 @@ public class RecipeMainActivity extends AppCompatActivity
                 false
         );
         mRecipesRecyclerView.setLayoutManager(gridLayoutManager);
-    }
-
-    // Credit: https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
-    public static float convertPixelsToDp(float px, Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return dp;
-    }
-
-    //Credit: https://stackoverflow.com/questions/11252067/how-do-i-get-the-screensize-programmatically-in-android
-    private static int getScreenResolution(Context context)
-    {
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        DisplayMetrics metrics = new DisplayMetrics();
-        display.getMetrics(metrics);
-        int width = metrics.widthPixels;
-        return width;
     }
 
     /**
@@ -163,9 +141,9 @@ public class RecipeMainActivity extends AppCompatActivity
 
                     @Override
                     public void onNext(List<Recipe> recipeResult) {
-                        Log.d(TAG, "OnNext");
-                        Log.d(TAG, "recipe results are: " + recipeResult);
-                        mRecipeAdapter.setRecipeData(recipeResult/*.getResults()*/);
+                        Log.d(TAG, "In OnNext");
+                        Log.d(TAG, "Recipe results are: " + recipeResult);
+                        mRecipeAdapter.setRecipeData(recipeResult);
                         if (scrollState != null) {
                             mRecipesRecyclerView.getLayoutManager().onRestoreInstanceState(scrollState);
                         }
@@ -207,10 +185,16 @@ public class RecipeMainActivity extends AppCompatActivity
     }
     // === End ===
 
+    /**
+     * When a recipe is selected, show the detail activity and update the app widget with the list
+     * of ingredients.
+     * @param recipe Selected Recipe object.
+     */
     @Override
     public void onClick(Recipe recipe) {
-        Class destinationActivity = RecipeDetailActivity.class;
 
+        // Show the detail activity
+        Class destinationActivity = RecipeDetailActivity.class;
         Context context = RecipeMainActivity.this;
         Intent intent = new Intent(context, destinationActivity);
 

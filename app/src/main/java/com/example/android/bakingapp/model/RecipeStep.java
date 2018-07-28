@@ -10,7 +10,6 @@ import java.util.ArrayList;
  */
 @Parcel
 public class RecipeStep {
-    public static final String VIDEO_PATH = "https://d17h27t6h515a5.cloudfront.net/topher/2017/%s";
 
     private String id;
     private String shortDescription;

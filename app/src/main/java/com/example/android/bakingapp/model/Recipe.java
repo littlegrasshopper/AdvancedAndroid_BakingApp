@@ -79,9 +79,6 @@ public class Recipe {
 
     /**
      * Convenience class for returning a list of recipe objects.
-     * Credit:
-     * https://stackoverflow.com/questions/9598707/gson-throwing-expected-begin-object-but-was-begin-array
-     * https://stackoverflow.com/questions/34623053/how-to-get-array-of-objects-with-gson-retrofit
      */
     public static class RecipeResult {
 

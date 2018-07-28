@@ -75,7 +75,6 @@ public class RecipeDetailActivity extends AppCompatActivity
      */
     @Override
     public void onClick(RecipeStep recipeStep) {
-        Log.i("RecipeDetailActivity", "RecipeStep is clicked: " + recipeStep.getId());
 
         // Build the bundle arg
         Bundle bundle = RecipeUtils.buildRecipeBundle(mRecipe, (int)Long.parseLong(recipeStep.getId()));
@@ -118,7 +117,6 @@ public class RecipeDetailActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState);
 
         if (savedInstanceState != null) {
-            Log.i("RecipeDetailActivity", "Restoring mRecipe from onRestoreInstanceState");
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
                 mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
             }

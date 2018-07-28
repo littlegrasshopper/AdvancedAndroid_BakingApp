@@ -54,7 +54,8 @@ public class RecipeArrayAdapter extends
         return viewHolder;
     }
 
-    // Credit: https://www.publicdomainpictures.net/en/view-image.php?image=32346&picture=pink-chocolate-cupcake
+    // Credit
+    //http://www.iconarchive.com/show/aka-acid-icons-by-archigraphs/Berry-Cupcake-icon.html
     @Override
     public void onBindViewHolder(RecipeViewHolder holder, int position) {
         Recipe recipe = mRecipes.get(position);

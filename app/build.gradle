@@ -23,8 +23,6 @@ repositories {
 
 ext {
     supportLibVersion = '25.3.0'
-    //supportLibVersion = '27.1.1'
-    //supportLibVersion = '26.1.0'
     constraintLayoutLibVersion = '1.1.0'
     junitLibVersion = '4.12'
     testRunnerVersion = '1.0.2'

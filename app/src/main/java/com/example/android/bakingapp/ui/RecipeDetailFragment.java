@@ -11,11 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
-import com.example.android.bakingapp.adapter.RecipeArrayAdapter;
 import com.example.android.bakingapp.adapter.RecipeIngredientArrayAdapter;
 import com.example.android.bakingapp.adapter.RecipeStepArrayAdapter;
 import com.example.android.bakingapp.model.Recipe;
@@ -31,7 +28,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Fragment for recipe ingredients and steps.
+ * Fragment for displaying recipe ingredients and steps.
+ * Instantiated by RecipeDetailActivity.
  */
 public class RecipeDetailFragment extends Fragment {
 
@@ -42,8 +40,7 @@ public class RecipeDetailFragment extends Fragment {
     RecipeStepArrayAdapter.RecipeStepArrayAdapterOnClickHandler mCallback;
 
     @BindView(R.id.rvIngredients) RecyclerView rvIngredients;
-    @BindView(R.id.rvSteps)
-    RecyclerView rvSteps;
+    @BindView(R.id.rvSteps) RecyclerView rvSteps;
 
     // Mandatory constructor for instantiating the fragment
     public RecipeDetailFragment() {}
@@ -56,18 +53,14 @@ public class RecipeDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-
         return rootView;
     }
-/*
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-*/
-        @Override
-        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
+        super.onActivityCreated(savedInstanceState);
+
         // Load the saved state if there is one
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
@@ -104,7 +97,6 @@ public class RecipeDetailFragment extends Fragment {
         stepArrayAdapter.setRecipeStepData(mSteps);
         rvSteps.setNestedScrollingEnabled(false);
     }
-
 
     /**
      * Ensure the host activity has implemented the callback interface

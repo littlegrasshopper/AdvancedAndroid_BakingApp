@@ -1,7 +1,12 @@
 package com.example.android.bakingapp.utilities;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import com.example.android.bakingapp.model.Recipe;
 
@@ -41,5 +46,24 @@ public final class RecipeUtils {
         bundle.putParcelable(RecipeUtils.EXTRA_RECIPE, Parcels.wrap(recipe));
         bundle.putInt(RecipeUtils.EXTRA_RECIPE_STEP_INDEX, stepIndex);
         return bundle;
+    }
+
+    // Credit: https://stackoverflow.com/questions/4605527/converting-pixels-to-dp
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        return dp;
+    }
+
+    //Credit: https://stackoverflow.com/questions/11252067/how-do-i-get-the-screensize-programmatically-in-android
+    public static int getScreenResolution(Context context)
+    {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        int width = metrics.widthPixels;
+        return width;
     }
 }

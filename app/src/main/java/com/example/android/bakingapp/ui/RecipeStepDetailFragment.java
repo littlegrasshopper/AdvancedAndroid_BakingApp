@@ -42,17 +42,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Fragment for details of a recipe step (video, instructions)
+ * Fragment for showing details of a recipe step (video, instructions)
  */
 public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
     private static final int NEXT_STEP_DELAY_MILLIS = 1000;
 
-
     @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mPlayerView;
-    @BindView(R.id.media_unavailable)
-    ImageView mMediaUnavailable;
+    @BindView(R.id.media_unavailable) ImageView mMediaUnavailable;
 
     private Recipe mRecipe;
     private int mCurrentRecipeStepIndex;
@@ -81,12 +79,6 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         return rootView;
     }
 
-    /*
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        */
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -95,8 +87,6 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
                 mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
-                Log.i(TAG, "onCreateView restoring mRecipe: " + mRecipe);
-
             }
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE_STEP)) {
                 mRecipeStep = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE_STEP));
@@ -113,17 +103,13 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         }
 
         if (mRecipe == null) {
-            Log.i(TAG, "Recipe is null get it from arguments");
             Bundle args = getArguments();
             mRecipe = Parcels.unwrap(args.getParcelable(RecipeUtils.EXTRA_RECIPE));
             mCurrentRecipeStepIndex = args.getInt(RecipeUtils.EXTRA_RECIPE_STEP_INDEX);
         }
 
-        Log.i(TAG, "onViewCreated mRecipe is: " + mRecipe);
         // Populate the details of the recipe step
         mRecipeStep = mRecipe.getSteps().get(mCurrentRecipeStepIndex);
-        Log.i(TAG, "onViewCreated mCurrentRecipeStepIndex is: " + mCurrentRecipeStepIndex);
-
 
         if (getActivity().findViewById(R.id.tvStepInstruction) != null) {
             mStepInstruction = (TextView) getActivity().findViewById(R.id.tvStepInstruction);
@@ -133,11 +119,17 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         setupMediaPlayer(mRecipeStep, mPlayerPosition, mPlayerState);
     }
 
-    public void setupMediaPlayer(RecipeStep step, long playerPosition, boolean playerState) {
-        Log.i(TAG, "About to initialize media player");
-        if (step != null) {
-            String url = step.getVideoURL();
-            String thumb = step.getThumbnailURL();
+    /**
+     * Set up the default artwork and call to initialize the media player
+     *
+     * @param recipeStep RecipeStep object with the media URLs
+     * @param playerPosition Where to start playing
+     * @param playerState Whether to play or pause
+     */
+    public void setupMediaPlayer(RecipeStep recipeStep, long playerPosition, boolean playerState) {
+        if (recipeStep != null) {
+            String url = recipeStep.getVideoURL();
+            String thumb = recipeStep.getThumbnailURL();
 
             if (mPlayerView != null && !TextUtils.isEmpty(thumb)) {
                 mPlayerView.setDefaultArtwork(BitmapFactory.decodeFile(thumb));
@@ -158,7 +150,6 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     private void initializePlayer(Uri mediaUri, long pos, boolean state) {
 
         if (mExoPlayer == null) {
-            Log.i(TAG, "Exoplayer is null");
             // Create an instance of the ExoPlayer.
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
@@ -166,7 +157,7 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
             mPlayerView.setPlayer(mExoPlayer);
             mExoPlayer.seekTo(pos);
 
-            mExoPlayer.addListener(this); //TODO: Is this needed?
+            mExoPlayer.addListener(this);
 
             // Prepare the MediaSource.
             String userAgent = Util.getUserAgent(getContext(), "BakingApp");
@@ -210,24 +201,9 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         }
     }
 
-    public void stopPlayer() {
-        // Wait some time so the user can see the correct answer, then go to the next question.
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mExoPlayer != null) {
-                    mExoPlayer.stop();
-                }
-                //getActivity().finish();
-            }
-        }, NEXT_STEP_DELAY_MILLIS);
-    }
-
     /**
      * Release the player when the activity is destroyed.
      */
-
     @Override
     public void onDestroy() {
         super.onDestroy();

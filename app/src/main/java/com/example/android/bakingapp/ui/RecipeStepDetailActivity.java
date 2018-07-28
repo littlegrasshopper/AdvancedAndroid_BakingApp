@@ -1,7 +1,6 @@
 package com.example.android.bakingapp.ui;
 
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,8 +27,7 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
 
     public static final String TAG = RecipeStepDetailActivity.class.getSimpleName();
 
-    @BindView(R.id.btnNextStep)
-    Button mNextButton;
+    @BindView(R.id.btnNextStep) Button mNextButton;
 
     private Recipe mRecipe;
     private int mCurrentRecipeStepIndex;
@@ -51,10 +49,8 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
             Intent intent = getIntent();
             mRecipe = Parcels.unwrap(intent.getParcelableExtra(RecipeUtils.EXTRA_RECIPE));
             mCurrentRecipeStepIndex = intent.getIntExtra(RecipeUtils.EXTRA_RECIPE_STEP_INDEX, 0);
-            Log.i(TAG, "step index is: " + mCurrentRecipeStepIndex);
 
             // Create a new step detail fragment
-            Log.i(TAG, "Creating new RecipeStepDetailFragment");
             mRecipeStepDetailFragment = new RecipeStepDetailFragment();
 
             // Build the bundle args
@@ -68,13 +64,6 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
             showOrHideNextButton();
         }
         else {
-            /*
-            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
-                mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
-            }
-            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX)) {
-                mCurrentRecipeStep = savedInstanceState.getInt(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX);
-            }*/
             //Restore the fragment's instance
             mRecipeStepDetailFragment = (RecipeStepDetailFragment) getSupportFragmentManager()
                     .getFragment(savedInstanceState, RecipeUtils.INSTANCE_FRAGMENT);
@@ -118,7 +107,6 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
         }
     }
 
-
     // Credit: https://stackoverflow.com/questions/15313598/once-for-all-how-to-correctly-save-instance-state-of-fragments-in-back-stack
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -136,7 +124,6 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
         super.onRestoreInstanceState(savedInstanceState);
 
         if (savedInstanceState != null) {
-            Log.i(TAG,"Restoring mRecipe from onRestoreInstanceState");
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
                 mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
             }
