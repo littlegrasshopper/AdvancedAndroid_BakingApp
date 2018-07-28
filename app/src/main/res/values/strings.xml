@@ -32,6 +32,7 @@
     <string name="bullet">&#8226;</string>
     <string name="nextStep">Next Step</string>
     <string name="bulletedList">&#8226;   %1$2s \n</string>
+    <string name="no_content_message">No content available.</string>
     <string name="error_message">Error occurred - check permissions or network connection.</string>
     <string name="recipe_image">Recipe Image</string>
 </resources>

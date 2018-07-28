@@ -12,6 +12,16 @@
         android:layout_width="@dimen/mediaPlayerWidth"
         android:layout_height="@dimen/mediaPlayerHeight" />
 
+    <ImageView
+        android:id="@+id/media_unavailable"
+        android:layout_width="@dimen/mediaPlayerWidth"
+        android:layout_height="@dimen/mediaPlayerHeight"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/no_content_message"
+        android:src="@drawable/no_content"
+        android:visibility="gone" />
+    <!-- Image Credit: http://aperion-industries.com/Testing%20Grounds.html -->
+
     <TextView
         android:id="@+id/tvStepInstruction"
         android:layout_width="wrap_content"

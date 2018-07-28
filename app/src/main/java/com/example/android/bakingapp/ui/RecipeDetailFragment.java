@@ -21,6 +21,7 @@ import com.example.android.bakingapp.adapter.RecipeStepArrayAdapter;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.RecipeIngredient;
 import com.example.android.bakingapp.model.RecipeStep;
+import com.example.android.bakingapp.utilities.RecipeUtils;
 
 import org.parceler.Parcels;
 
@@ -34,14 +35,8 @@ import butterknife.ButterKnife;
  */
 public class RecipeDetailFragment extends Fragment {
 
-    public static final String INSTANCE_RECIPE = "recipe";
-    public static final String INSTANCE_RECIPE_STEPS = "recipeSteps";
-    public static final String INSTANCE_RECIPE_INGREDIENTS = "recipeIngredients";
-
     private ArrayList<RecipeIngredient> mIngredients;
     private ArrayList<RecipeStep> mSteps;
-    private RecipeArrayAdapter mAdapter;
-    private RecipeStep mRecipeStep;
     private Recipe mRecipe;
 
     RecipeStepArrayAdapter.RecipeStepArrayAdapterOnClickHandler mCallback;
@@ -61,31 +56,28 @@ public class RecipeDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        // Load the saved state if there is one
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE)) {
-                mRecipe =  Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE));
-            }
-            /*
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEPS)) {
-                mSteps =  Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_STEPS));
-            }
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE_INGREDIENTS)) {
-                mIngredients = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_INGREDIENTS));
-            }
-            */
-        }
 
         return rootView;
     }
-
+/*
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Bundle args = getArguments();
+*/
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+        // Load the saved state if there is one
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
+                mRecipe =  Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
+            }
+        }
+
         if (mRecipe == null) {
-            mRecipe = Parcels.unwrap(args.getParcelable(RecipeDetailActivity.EXTRA_RECIPE));
+            Bundle args = getArguments();
+            mRecipe = Parcels.unwrap(args.getParcelable(RecipeUtils.EXTRA_RECIPE));
         }
 
         mSteps = mRecipe.getSteps();
@@ -99,6 +91,7 @@ public class RecipeDetailFragment extends Fragment {
         RecipeIngredientArrayAdapter ingredientArrayAdapter = new RecipeIngredientArrayAdapter(getContext());
         rvIngredients.setAdapter(ingredientArrayAdapter);
         ingredientArrayAdapter.setRecipeIngredientData(mIngredients);
+        rvIngredients.setNestedScrollingEnabled(false);
 
 
         // Populate the list of steps by creating a layout manager and applying to the
@@ -109,19 +102,9 @@ public class RecipeDetailFragment extends Fragment {
         RecipeStepArrayAdapter stepArrayAdapter = new RecipeStepArrayAdapter(getContext(), mCallback);
         rvSteps.setAdapter(stepArrayAdapter);
         stepArrayAdapter.setRecipeStepData(mSteps);
+        rvSteps.setNestedScrollingEnabled(false);
     }
 
-/*
-    @Override
-    public void onClick(RecipeStep recipeStep) {
-        Class destinationActivity = RecipeStepDetailActivity.class;
-
-        Context context = getActivity();
-        Intent intent = new Intent(context, destinationActivity);
-
-        intent.putExtra(RecipeStepDetailActivity.EXTRA_RECIPE_STEP, Parcels.wrap(recipeStep));
-        startActivity(intent);
-    }*/
 
     /**
      * Ensure the host activity has implemented the callback interface
@@ -143,10 +126,7 @@ public class RecipeDetailFragment extends Fragment {
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(INSTANCE_RECIPE, Parcels.wrap(mRecipe));
-        //outState.putParcelable(INSTANCE_RECIPE_STEPS, Parcels.wrap(mSteps));
-        //outState.putParcelable(INSTANCE_RECIPE_INGREDIENTS, Parcels.wrap(mIngredients));
-
+        outState.putParcelable(RecipeUtils.INSTANCE_RECIPE, Parcels.wrap(mRecipe));
         super.onSaveInstanceState(outState);
     }
 }

@@ -1,7 +1,5 @@
 package com.example.android.bakingapp.ui;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,12 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.RecipeStep;
+import com.example.android.bakingapp.utilities.RecipeUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -48,19 +47,12 @@ import butterknife.ButterKnife;
 public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.EventListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
-    public static final String INSTANCE_RECIPE = "instanceRecipe";
-    public static final String INSTANCE_RECIPE_STEP = "instanceRecipeStep";
-    public static final String INSTANCE_RECIPE_STEP_INDEX = "instanceRecipeStepIndex";
-    public static final String INSTANCE_PLAYER_POSITION = "instancePlayerPosition";
-    public static final String INSTANCE_PLAYER_STATE = "instancePlayerState";
-
     private static final int NEXT_STEP_DELAY_MILLIS = 1000;
 
 
     @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mPlayerView;
-   // @BindView(R.id.tvStepInstruction) TextView mStepInstruction;
-    //@BindView(R.id.btnNextStep) Button mNextBtn;
-
+    @BindView(R.id.media_unavailable)
+    ImageView mMediaUnavailable;
 
     private Recipe mRecipe;
     private int mCurrentRecipeStepIndex;
@@ -85,39 +77,53 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_detail, container, false);
         ButterKnife.bind(this, rootView);
 
-        // Load the saved state if there is one
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE)) {
-                mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE));
-            }
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEP)) {
-                mRecipeStep = Parcels.unwrap(savedInstanceState.getParcelable(INSTANCE_RECIPE_STEP));
-            }
-            if (savedInstanceState.containsKey(INSTANCE_RECIPE_STEP_INDEX)) {
-                mCurrentRecipeStepIndex = savedInstanceState.getInt(INSTANCE_RECIPE_STEP_INDEX);
-            }
-            if (savedInstanceState.containsKey(INSTANCE_PLAYER_POSITION)) {
-                mPlayerPosition = savedInstanceState.getLong(INSTANCE_PLAYER_POSITION);
-            }
-            if (savedInstanceState.containsKey(INSTANCE_PLAYER_STATE)) {
-                mPlayerState = savedInstanceState.getBoolean(INSTANCE_PLAYER_STATE);;
-            }
-        }
-
         // Return the rootView
         return rootView;
     }
 
+    /*
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        */
 
-        Bundle args = getArguments();
-        mRecipe = Parcels.unwrap(args.getParcelable(RecipeDetailActivity.EXTRA_RECIPE));
-        mCurrentRecipeStepIndex = args.getInt(RecipeDetailActivity.EXTRA_RECIPE_CURRENT_STEP);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
+        // Load the saved state if there is one
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
+                mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
+                Log.i(TAG, "onCreateView restoring mRecipe: " + mRecipe);
+
+            }
+            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE_STEP)) {
+                mRecipeStep = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE_STEP));
+            }
+            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX)) {
+                mCurrentRecipeStepIndex = savedInstanceState.getInt(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX);
+            }
+            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_PLAYER_POSITION)) {
+                mPlayerPosition = savedInstanceState.getLong(RecipeUtils.INSTANCE_PLAYER_POSITION);
+            }
+            if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_PLAYER_STATE)) {
+                mPlayerState = savedInstanceState.getBoolean(RecipeUtils.INSTANCE_PLAYER_STATE);;
+            }
+        }
+
+        if (mRecipe == null) {
+            Log.i(TAG, "Recipe is null get it from arguments");
+            Bundle args = getArguments();
+            mRecipe = Parcels.unwrap(args.getParcelable(RecipeUtils.EXTRA_RECIPE));
+            mCurrentRecipeStepIndex = args.getInt(RecipeUtils.EXTRA_RECIPE_STEP_INDEX);
+        }
+
+        Log.i(TAG, "onViewCreated mRecipe is: " + mRecipe);
         // Populate the details of the recipe step
         mRecipeStep = mRecipe.getSteps().get(mCurrentRecipeStepIndex);
+        Log.i(TAG, "onViewCreated mCurrentRecipeStepIndex is: " + mCurrentRecipeStepIndex);
+
 
         if (getActivity().findViewById(R.id.tvStepInstruction) != null) {
             mStepInstruction = (TextView) getActivity().findViewById(R.id.tvStepInstruction);
@@ -137,7 +143,10 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
                 mPlayerView.setDefaultArtwork(BitmapFactory.decodeFile(thumb));
             }
             if (!TextUtils.isEmpty(url)) {
+                showMediaPlayer();
                 initializePlayer(Uri.parse(url), playerPosition, playerState);
+            } else {
+                showDefaultImage();
             }
         }
     }
@@ -166,6 +175,26 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
             mExoPlayer.prepare(mediaSource);
             mExoPlayer.setPlayWhenReady(state);
         }
+    }
+
+    /**
+     * Show the media player
+     */
+    private void showMediaPlayer() {
+        // hide the default image
+        mMediaUnavailable.setVisibility(View.GONE);
+        // show the media player
+        mPlayerView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Show a placeholder image if media is unavailable
+     */
+    private void showDefaultImage() {
+        // hide the media player
+        mPlayerView.setVisibility(View.GONE);
+        // show the error message
+        mMediaUnavailable.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -220,8 +249,6 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
     }
 
     // ExoPlayer Event Listeners
-
-
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest) {
         Log.i(TAG, "onTimelineChanged");
@@ -252,41 +279,16 @@ public class RecipeStepDetailFragment extends Fragment implements ExoPlayer.Even
         Log.i(TAG, "onPositionDiscontinuity");
     }
 
-
-    /**
-     * Set the Recipe object for this fragment
-     * @param recipe Recipe object to guide the next step
-     */
-    public void XsetRecipe(Recipe recipe) {
-        mRecipe = recipe;
-    }
-
-    /**
-     * Set the RecipeStep object for this fragment
-     * @param recipeStep RecipeStep object to render in this fragment
-     */
-    public void XsetRecipeStep(RecipeStep recipeStep) {
-        mRecipeStep = recipeStep;
-    }
-
-    /**
-     * Set the current step in the recipe
-     * @param pos Current step
-     */
-    public void XsetCurrentRecipeStepIndex(int pos) {
-        mCurrentRecipeStepIndex = pos;
-    }
-
     /**
      * Save the current state of the fragment
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(INSTANCE_RECIPE, Parcels.wrap(mRecipe));
-        outState.putParcelable(INSTANCE_RECIPE_STEP, Parcels.wrap(mRecipeStep));
-        outState.putInt(INSTANCE_RECIPE_STEP_INDEX, mCurrentRecipeStepIndex);
-        outState.putLong(INSTANCE_PLAYER_POSITION, mExoPlayer.getCurrentPosition());
-        outState.putBoolean(INSTANCE_PLAYER_STATE, mPlayerState);
+        outState.putParcelable(RecipeUtils.INSTANCE_RECIPE, Parcels.wrap(mRecipe));
+        outState.putParcelable(RecipeUtils.INSTANCE_RECIPE_STEP, Parcels.wrap(mRecipeStep));
+        outState.putInt(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX, mCurrentRecipeStepIndex);
+        outState.putLong(RecipeUtils.INSTANCE_PLAYER_POSITION, mExoPlayer.getCurrentPosition());
+        outState.putBoolean(RecipeUtils.INSTANCE_PLAYER_STATE, mPlayerState);
         super.onSaveInstanceState(outState);
     }
 }

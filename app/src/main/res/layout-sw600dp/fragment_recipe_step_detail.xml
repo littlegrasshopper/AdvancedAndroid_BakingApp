@@ -5,8 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/recipe_step_detail_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <com.google.android.exoplayer2.ui.SimpleExoPlayerView
         android:id="@+id/exoMediaPlayer"
@@ -18,6 +17,21 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.501" />
 
+    <ImageView
+        android:id="@+id/media_unavailable"
+        android:layout_width="@dimen/mediaPlayerWidth"
+        android:layout_height="@dimen/mediaPlayerHeight"
+        android:scaleType="fitCenter"
+        android:src="@drawable/no_content"
+        android:visibility="gone"
+        android:contentDescription="@string/no_content_message"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.501"/>
+    <!-- Image Credit: http://aperion-industries.com/Testing%20Grounds.html -->
+
     <TextView
         android:id="@+id/tvStepInstruction"
         android:layout_width="wrap_content"
@@ -25,12 +39,5 @@
         android:layout_marginTop="@dimen/detailBodyIndent"
         app:layout_constraintLeft_toLeftOf="@+id/exoMediaPlayer"
         app:layout_constraintTop_toBottomOf="@+id/exoMediaPlayer" />
-
-    <!--
-    <Button
-        android:id="@+id/btnNextStep"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next Step"/> -->
 
 </android.support.constraint.ConstraintLayout>

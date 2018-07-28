@@ -1,10 +1,8 @@
 package com.example.android.bakingapp.ui;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Movie;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
@@ -12,16 +10,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.android.bakingapp.BakingAppWidgetService;
@@ -30,8 +25,7 @@ import com.example.android.bakingapp.RecipeClient;
 import com.example.android.bakingapp.adapter.RecipeArrayAdapter;
 import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.model.RecipeIngredient;
-//import com.facebook.stetho.Stetho;
-//import com.facebook.stetho.okhttp3.StethoInterceptor;
+import com.example.android.bakingapp.utilities.RecipeUtils;
 
 import org.parceler.Parcels;
 
@@ -61,7 +55,6 @@ public class RecipeMainActivity extends AppCompatActivity
 
     private RecipeArrayAdapter mRecipeAdapter;
     private Subscription subscription;
-    //private AppDatabase mDb;
 
     @BindView(R.id.rvRecipes)
     RecyclerView mRecipesRecyclerView;
@@ -73,11 +66,7 @@ public class RecipeMainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*Stetho.initializeWithDefaults(this);
-        new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .build();
-                */
+
         setContentView(R.layout.activity_recipe_main);
         ButterKnife.bind(this);
 
@@ -106,9 +95,6 @@ public class RecipeMainActivity extends AppCompatActivity
         Log.i("RecipeMainActivity", "ScreenResolution: " + getScreenResolution(this));
         Log.i("RecipeMainActivity", "GridSpan: " + gridSpan);
 
-        // Credit
-        // https://stackoverflow.com/questions/11330363/how-to-detect-device-is-android-phone-or-android-tablet
-        //if (getResources().getBoolean(R.bool.isTab)) {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(
                 this,
                 gridSpan > 0 ? gridSpan : 1,
@@ -188,32 +174,6 @@ public class RecipeMainActivity extends AppCompatActivity
     }
 
     /**
-     * Setup the ViewModel for the recipes
-     */
-    /*
-    private void setupViewModel() {
-        mDb = AppDatabase.getsInstance(getApplicationContext());
-        ShowFavoritesViewModel viewModel = ViewModelProviders
-                .of(this)
-                .get(ShowFavoritesViewModel.class);
-
-        viewModel.getFavorites()
-                .observe(this, new android.arch.lifecycle.Observer<List<Movie>>() {
-                    @Override
-                    public void onChanged(@Nullable final List<Movie> favoritesEntries) {
-                        Log.d(TAG, "Updating list of favorites from LiveData in ViewModel: " + favoritesEntries);
-                        // Lesson 12.13 4:29 This needs to be run on the UI thread
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mRecipeAdapter.setMovieData((ArrayList<Movie>)favoritesEntries);
-                            }
-                        });
-                    }
-                });
-    }*/
-
-    /**
      * Show the view for the recipes data and hide the error message display.
      */
     private void showRecipeDataView() {
@@ -254,7 +214,7 @@ public class RecipeMainActivity extends AppCompatActivity
         Context context = RecipeMainActivity.this;
         Intent intent = new Intent(context, destinationActivity);
 
-        intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE, Parcels.wrap(recipe));
+        intent.putExtra(RecipeUtils.EXTRA_RECIPE, Parcels.wrap(recipe));
         startActivity(intent);
 
         //Update the Widget service

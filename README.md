@@ -1,8 +1,5 @@
 # Project 4 - Baking App
-
-## What's Broken
-- Back button from video screen results in NPE
-- Detail screen (ingredients, steps) doesn't scroll (only Steps view scrolls)
+Android app to display recipes, their ingredients and step-by-step instructions. 
 
 ## Design
 <img src='BakingApp_design.jpg' title='Design' width='500' alt='Design' />

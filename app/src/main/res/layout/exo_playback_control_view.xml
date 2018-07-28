@@ -31,14 +31,17 @@
 
         <ImageButton
             android:id="@id/exo_prev"
+            android:contentDescription="@string/restart"
             style="@style/ExoMediaButton.Previous" />
 
         <ImageButton
             android:id="@id/exo_play"
+            android:contentDescription="play"
             style="@style/ExoMediaButton.Play" />
 
         <ImageButton
             android:id="@id/exo_pause"
+            android:contentDescription="@string/pause"
             style="@style/ExoMediaButton.Pause" />
 
     </LinearLayout>

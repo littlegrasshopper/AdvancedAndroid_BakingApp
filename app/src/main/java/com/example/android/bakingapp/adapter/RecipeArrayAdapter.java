@@ -64,6 +64,7 @@ public class RecipeArrayAdapter extends
         ImageView imageView = holder.ivImageView;
         if (!TextUtils.isEmpty(imagePath)) {
             Picasso.with(mContext).load(imagePath)
+                    .fit()
                     .placeholder(R.drawable.cupcake)
                     .into(imageView);
         } else {
