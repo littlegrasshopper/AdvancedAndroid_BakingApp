@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/appwidget_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cardview_light_background"
+    android:orientation="vertical"
+    android:padding="@dimen/widget_margin">
+
+    <LinearLayout
+        android:id="@+id/widget_identity_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/detailBodyIndent">
+
+        <ImageView
+            android:id="@+id/widget_app_image"
+            android:layout_width="@dimen/iconSize"
+            android:layout_height="@dimen/iconSize"
+            android:layout_gravity="left"
+            android:layout_margin="@dimen/widget_icon_margin"
+            android:scaleType="fitCenter"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/cupcake" />
+
+        <TextView
+            android:id="@+id/widget_app_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/detailBodyIndent"
+            android:contentDescription="@string/app_name"
+            android:text="@string/app_name"
+            android:textColor="@color/widgetBackground" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_recipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:background="@color/widgetBackground"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/widget_recipe_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/detailBodyIndent"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/widget_ingredients_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/detailBodyIndent"
+            android:layout_marginLeft="@dimen/detailBodyIndent"
+            android:ellipsize="end"
+            android:textColor="#ffffff" />
+
+    </LinearLayout>
+
+</LinearLayout>

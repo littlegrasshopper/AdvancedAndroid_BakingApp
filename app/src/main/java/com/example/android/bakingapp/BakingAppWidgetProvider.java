@@ -36,7 +36,7 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.baking_app_widget_provider);
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.appwidget_layout);
         views.setTextViewText(R.id.widget_app_text, widgetText);
         views.setTextViewText(R.id.widget_recipe_title, recipeTitle);
         if (TextUtils.isEmpty(ingredients)) {
@@ -46,7 +46,7 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
         }
 
         // Widgets allow click handlers to only launch pending intents
-        views.setOnClickPendingIntent(R.id.baking_app_widget_provider_layout, pendingIntent);
+        views.setOnClickPendingIntent(R.id.appwidget_layout, pendingIntent);
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

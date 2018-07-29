@@ -128,7 +128,7 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
                 mRecipe = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
             }
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX)) {
-                mCurrentRecipeStepIndex = Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX));
+                mCurrentRecipeStepIndex = savedInstanceState.getInt(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX, 0);
             }
         }
     }
