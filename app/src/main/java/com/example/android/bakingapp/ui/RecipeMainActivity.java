@@ -48,7 +48,6 @@ public class RecipeMainActivity extends AppCompatActivity
         implements RecipeArrayAdapter.RecipeArrayAdapterOnClickHandler {
 
     private static final String TAG = RecipeMainActivity.class.getSimpleName();
-    private static final String LIFECYCLE_SCROLL_STATE = "scrollState";
     private static final int MAX_WIDTH_RECIPE = 300;
 
     private static Parcelable scrollState;
@@ -209,7 +208,7 @@ public class RecipeMainActivity extends AppCompatActivity
             // https://stackoverflow.com/questions/23503642/how-to-use-formatted-strings-together-with-placeholders-in-android
             builder.append(String.format(getString(R.string.bulletedList), ingredients.get(i).getIngredient()));
         }
-        BakingAppWidgetService.startActionUpdateBakingWidget(context,Long.parseLong(recipe.getId()),
+        BakingAppWidgetService.startActionUpdateBakingWidget(context, recipe,
                 recipe.getName(), builder.toString());
     }
 
@@ -219,7 +218,7 @@ public class RecipeMainActivity extends AppCompatActivity
         // https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
         // Save scroll state
         scrollState = mRecipesRecyclerView.getLayoutManager().onSaveInstanceState();
-        outState.putParcelable(LIFECYCLE_SCROLL_STATE, scrollState);
+        outState.putParcelable(RecipeUtils.SCROLL_STATE, scrollState);
 
         super.onSaveInstanceState(outState);
     }
@@ -232,7 +231,7 @@ public class RecipeMainActivity extends AppCompatActivity
         // https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
         // Retrieve scroll state
         if(savedInstanceState != null) {
-            scrollState = savedInstanceState.getParcelable(LIFECYCLE_SCROLL_STATE);
+            scrollState = savedInstanceState.getParcelable(RecipeUtils.SCROLL_STATE);
         }
     }
 }

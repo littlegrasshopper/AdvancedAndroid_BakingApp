@@ -83,6 +83,7 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
         // Increment the step count
         mRecipeStepDetailFragment = new RecipeStepDetailFragment();
         Bundle bundle = RecipeUtils.buildRecipeBundle(mRecipe, ++mCurrentRecipeStepIndex);
+
         mRecipeStepDetailFragment.setArguments(bundle);
 
         getSupportFragmentManager().beginTransaction()
@@ -100,8 +101,8 @@ public class RecipeStepDetailActivity extends AppCompatActivity implements View.
             ArrayList<RecipeStep> steps = mRecipe.getSteps();
             if (steps != null) {
                 int numOfSteps = steps.size();
-                if (mCurrentRecipeStepIndex < numOfSteps - 1) {
-                    mNextButton.setVisibility(View.VISIBLE);
+                if (mCurrentRecipeStepIndex >= numOfSteps - 1) {
+                    mNextButton.setVisibility(View.INVISIBLE);
                 }
             }
         }

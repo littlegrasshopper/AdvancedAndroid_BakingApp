@@ -48,7 +48,6 @@ import butterknife.ButterKnife;
 public class RecipeStepDetailFragment extends Fragment {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
-    private static final int NEXT_STEP_DELAY_MILLIS = 1000;
 
     @BindView(R.id.exoMediaPlayer) SimpleExoPlayerView mPlayerView;
     @BindView(R.id.media_unavailable) ImageView mMediaUnavailable;
@@ -247,7 +246,9 @@ public class RecipeStepDetailFragment extends Fragment {
         outState.putParcelable(RecipeUtils.INSTANCE_RECIPE, Parcels.wrap(mRecipe));
         outState.putParcelable(RecipeUtils.INSTANCE_RECIPE_STEP, Parcels.wrap(mRecipeStep));
         outState.putInt(RecipeUtils.INSTANCE_RECIPE_STEP_INDEX, mCurrentRecipeStepIndex);
-        outState.putLong(RecipeUtils.INSTANCE_PLAYER_POSITION, mExoPlayer.getCurrentPosition());
+        if (mExoPlayer != null) {
+            outState.putLong(RecipeUtils.INSTANCE_PLAYER_POSITION, mExoPlayer.getCurrentPosition());
+        }
         outState.putBoolean(RecipeUtils.INSTANCE_PLAYER_STATE, mPlayWhenReady);
         super.onSaveInstanceState(outState);
     }

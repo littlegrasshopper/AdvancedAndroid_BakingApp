@@ -10,8 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import com.example.android.bakingapp.model.Recipe;
 import com.example.android.bakingapp.ui.RecipeDetailActivity;
 import com.example.android.bakingapp.ui.RecipeMainActivity;
+import com.example.android.bakingapp.utilities.RecipeUtils;
+
+import org.parceler.Parcels;
 
 /**
  * Implementation of App Widget functionality.
@@ -19,16 +23,16 @@ import com.example.android.bakingapp.ui.RecipeMainActivity;
 public class BakingAppWidgetProvider extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                long recipeId, String recipeTitle, String ingredients, int appWidgetId) {
+                                Recipe recipe, String recipeTitle, String ingredients, int appWidgetId) {
 
         CharSequence widgetText = context.getString(R.string.app_name);
 
-        // Create an Intent to launch Detail Activity if a valid recipe ID is passed
+        // Create an Intent to launch Detail Activity if a valid recipe is passed
         // Otherwise launch the MainActivity
         Intent intent;
-        if (recipeId != BakingAppWidgetService.INVALID_RECIPE_ID) {
+        if (recipe != null) {
             intent = new Intent(context, RecipeDetailActivity.class);
-            intent.putExtra(BakingAppWidgetService.EXTRA_RECIPE_ID, recipeId);
+            intent.putExtra(RecipeUtils.EXTRA_RECIPE, Parcels.wrap(recipe));
         } else {
             intent = new Intent(context, RecipeMainActivity.class);
         }
@@ -56,10 +60,10 @@ public class BakingAppWidgetProvider extends AppWidgetProvider {
      * Custom update method for the widget
      */
     public static void updateAppWidgets(Context context, AppWidgetManager appWidgetManager,
-                                        long recipeId, String recipeTitle, String ingredients,
+                                        Recipe recipe, String recipeTitle, String ingredients,
                                         int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, recipeId, recipeTitle, ingredients, appWidgetId);
+            updateAppWidget(context, appWidgetManager, recipe, recipeTitle, ingredients, appWidgetId);
         }
     }
 

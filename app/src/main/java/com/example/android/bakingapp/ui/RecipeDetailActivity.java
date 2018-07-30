@@ -28,9 +28,6 @@ public class RecipeDetailActivity extends AppCompatActivity
     RecipeDetailFragment detailFragment;
     RecipeStepDetailFragment stepDetailFragment;
 
-    // Flag used to determine if tablet layout is needed
-    private boolean mTwoPane;
-
     public void RecipeDetailActvity() {
     }
 
@@ -39,50 +36,54 @@ public class RecipeDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        // No previously saved state
-        if (savedInstanceState == null) {
-
-            // Get the passed in Recipe object from the intent
-            mRecipe = Parcels.unwrap(getIntent().getParcelableExtra(RecipeUtils.EXTRA_RECIPE));
-
-            // Only create new fragments when there is no previously saved state
-            detailFragment = new RecipeDetailFragment();
-
-            // Pass Recipe object and initial step index to the fragment
-            detailFragment.setArguments(RecipeUtils.buildRecipeBundle(mRecipe, 0));
-
-            // Add the fragment to its container using a FragmentManager and a transaction
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.recipe_detail_container, detailFragment)
-                    .commit();
-        } else {
+        // Restore if there is a previously saved state
+        if (savedInstanceState != null) {
             //Restore the fragment's instance
             detailFragment = (RecipeDetailFragment) getSupportFragmentManager()
                     .getFragment(savedInstanceState, RecipeUtils.INSTANCE_FRAGMENT);
-        }
-
-        // Check if this is a two-pane layout (tablet)
-        if (findViewById(R.id.recipe_step_detail_container) != null) {
-            mTwoPane = true;
         } else {
-            mTwoPane = false;
+            // Determine if a recipe fragment already exists
+            if (detailFragment == null) {
+                detailFragment = (RecipeDetailFragment) getSupportFragmentManager()
+                        .findFragmentByTag(RecipeDetailFragment.class.getCanonicalName());
+            }
+
+            // Create a new fragment if one doesn't exist
+            if (detailFragment == null) {
+                detailFragment = new RecipeDetailFragment();
+
+                // Get the passed in Recipe object from the intent
+                Intent intent = getIntent();
+                mRecipe = Parcels.unwrap(intent.getParcelableExtra(RecipeUtils.EXTRA_RECIPE));
+
+                // Bundle Recipe object and initial step index to send to the fragment
+                detailFragment.setArguments(RecipeUtils.buildRecipeBundle(mRecipe, 0));
+
+                // Add the fragment to its container using a FragmentManager and a transaction
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.recipe_detail_container,
+                                detailFragment,
+                                RecipeDetailFragment.class.getCanonicalName())
+                        .commit();
+            }
         }
     }
 
     /**
      * Handle user clicks on the RecipeStep object.
      * @param recipeStep The step user clicked on.
+     * @param pos The index of the selected RecipeStep object in the list.
      */
     @Override
-    public void onClick(RecipeStep recipeStep) {
+    public void onClick(RecipeStep recipeStep, int pos) {
 
         // Build the bundle arg
-        Bundle bundle = RecipeUtils.buildRecipeBundle(mRecipe, (int)Long.parseLong(recipeStep.getId()));
+        Bundle bundle = RecipeUtils.buildRecipeBundle(mRecipe, pos);
 
         /* If in a two-pane/tablet layout, just instantiate a new RecipeStepDetail fragment.
          * Otherwise, start a new activity for the step detail.
          */
-        if (mTwoPane) {
+        if (RecipeUtils.isTablet(this)) {
             // Just need to create/replace the step detail fragment
             stepDetailFragment = new RecipeStepDetailFragment();
             stepDetailFragment.setArguments(bundle);

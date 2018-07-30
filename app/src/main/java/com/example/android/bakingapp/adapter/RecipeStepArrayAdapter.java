@@ -26,7 +26,7 @@ public class RecipeStepArrayAdapter extends
     public static final String TAG = RecipeStepArrayAdapter.class.getSimpleName();
 
     public interface RecipeStepArrayAdapterOnClickHandler {
-        void onClick(RecipeStep m);
+        void onClick(RecipeStep m, int pos);
     }
 
     private Context mContext;
@@ -82,7 +82,7 @@ public class RecipeStepArrayAdapter extends
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             RecipeStep recipeStep = mRecipeSteps.get(adapterPosition);
-            mClickHandler.onClick(recipeStep);
+            mClickHandler.onClick(recipeStep, adapterPosition);
         }
     }
 

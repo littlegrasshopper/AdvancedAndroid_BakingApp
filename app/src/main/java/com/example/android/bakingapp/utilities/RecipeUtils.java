@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import com.example.android.bakingapp.R;
 import com.example.android.bakingapp.model.Recipe;
 
 import org.parceler.Parcels;
@@ -34,6 +35,10 @@ public final class RecipeUtils {
     // Keys for saving instance state media player
     public static final String INSTANCE_PLAYER_POSITION = "instancePlayerPosition";
     public static final String INSTANCE_PLAYER_STATE = "instancePlayerState";
+
+    // Keys for saving instance scroll position
+    public static final String SCROLL_POSITION = "scrollPosition";
+    public static final String SCROLL_STATE = "scrollState";
 
     /**
      * Build the bundle with values to pass between activity and fragment
@@ -65,5 +70,15 @@ public final class RecipeUtils {
         display.getMetrics(metrics);
         int width = metrics.widthPixels;
         return width;
+    }
+
+    public static boolean isTablet(Context context) {
+        // Check if this is a two-pane layout (tablet)
+        boolean tabletSize = context.getResources().getBoolean(R.bool.isTablet);
+        if (tabletSize) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

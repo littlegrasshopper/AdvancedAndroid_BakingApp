@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,6 +42,13 @@ public class RecipeDetailFragment extends Fragment {
 
     @BindView(R.id.rvIngredients) RecyclerView rvIngredients;
     @BindView(R.id.rvSteps) RecyclerView rvSteps;
+    @BindView(R.id.recipe_detail_scrollview)
+
+    NestedScrollView mNestedScrollView;
+
+    // Track scroll position
+    private static int scrollX;
+    private static int scrollY;
 
     // Mandatory constructor for instantiating the fragment
     public RecipeDetailFragment() {}
@@ -65,6 +73,22 @@ public class RecipeDetailFragment extends Fragment {
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(RecipeUtils.INSTANCE_RECIPE)) {
                 mRecipe =  Parcels.unwrap(savedInstanceState.getParcelable(RecipeUtils.INSTANCE_RECIPE));
+            }
+            // Restore scroll position
+            // Credit:
+            // https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes
+
+            if (savedInstanceState.containsKey(RecipeUtils.SCROLL_POSITION)) {
+                final int[] position = savedInstanceState.getIntArray(RecipeUtils.SCROLL_POSITION);
+                scrollX = position[0];
+                scrollY = position[1];
+                if(position != null) {
+                    mNestedScrollView.post(new Runnable() {
+                        public void run() {
+                            mNestedScrollView.scrollTo(scrollX, scrollY);
+                        }
+                    });
+                }
             }
         }
 
@@ -119,6 +143,13 @@ public class RecipeDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(RecipeUtils.INSTANCE_RECIPE, Parcels.wrap(mRecipe));
+        // Save scroll position
+        // Credit:
+        // https://stackoverflow.com/questions/29208086/save-the-position-of-scrollview-when-the-orientation-changes
+
+        outState.putIntArray(RecipeUtils.SCROLL_POSITION,
+                new int[]{mNestedScrollView.getScrollX(), mNestedScrollView.getScrollY()});
+
         super.onSaveInstanceState(outState);
     }
 }
